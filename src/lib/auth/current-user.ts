@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { demoUserEmail } from "@/lib/demo";
 import { prisma } from "@/lib/prisma/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -62,31 +61,13 @@ export async function getCurrentAppUserWithActiveGoal() {
 }
 
 export async function getCurrentOrDemoAppUser() {
-  const user = await getCurrentAppUser();
-
-  if (user) {
-    return user;
-  }
-
-  return prisma.user.findUniqueOrThrow({
-    where: { email: demoUserEmail },
-  });
+  return requireCurrentAppUser();
 }
 
 export async function getCurrentOrDemoUserWhereUnique() {
-  const claims = await getVerifiedSupabaseClaims();
+  const user = await requireCurrentAppUser();
 
-  if (!claims?.email) {
-    return { email: demoUserEmail } as const;
-  }
-
-  const user = await getCurrentAppUser();
-
-  if (user) {
-    return { id: user.id } as const;
-  }
-
-  return { email: demoUserEmail } as const;
+  return { id: user.id } as const;
 }
 
 type VerifiedSupabaseClaims = {

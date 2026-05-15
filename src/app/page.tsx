@@ -8,7 +8,11 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const signedInUser = await getCurrentAppUserWithActiveGoal();
 
-  if (signedInUser && signedInUser.goals.length === 0) {
+  if (!signedInUser) {
+    redirect("/login");
+  }
+
+  if (signedInUser.goals.length === 0) {
     redirect("/onboarding");
   }
 

@@ -177,12 +177,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </Link>
           </p>
 
-          <Link
-            className="mt-3 inline-flex text-sm font-semibold text-blue-700"
-            href="/"
-          >
-            Continue to demo dashboard
-          </Link>
+          <p className="mt-3 text-xs leading-5 text-slate-400">
+            Your data stays tied to your account.
+          </p>
         </section>
       </div>
     </main>

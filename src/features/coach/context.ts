@@ -1,9 +1,6 @@
 import { getCurrentOrDemoUserWhereUnique } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import { addNutrientTotals } from "@/lib/nutrition/math";
-import { demoUserEmail } from "@/lib/demo";
-
-export const demoCoachUserEmail = demoUserEmail;
 
 export async function getCoachNutritionContext() {
   const userWhere = await getCurrentOrDemoUserWhereUnique();
@@ -61,7 +58,7 @@ export async function getCoachNutritionContext() {
   });
 
   if (!user) {
-    throw new Error("Demo coach user has not been seeded.");
+    throw new Error("Coach user could not be loaded.");
   }
 
   const goal = user.goals[0];

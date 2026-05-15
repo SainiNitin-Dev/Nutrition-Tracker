@@ -8,9 +8,10 @@ import {
   PrismaClient,
   SupplementLogStatus,
 } from "../src/generated/prisma/client";
-import { demoUserEmail } from "../src/lib/demo";
 
 config({ path: ".env.local" });
+
+const demoUserEmail = "alex.demo@nourish.local";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
