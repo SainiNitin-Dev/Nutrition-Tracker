@@ -174,6 +174,95 @@ export async function deleteMealTemplateForCurrentUser(templateId: string) {
   });
 }
 
+export async function deleteTodayMealForCurrentUser(input: {
+  mealType?: MealType;
+  title?: string;
+}) {
+  const user = await getCurrentOrDemoAppUser();
+  const meals = await prisma.meal.findMany({
+    where: {
+      userId: user.id,
+      date: {
+        gte: startOfToday(),
+        lt: startOfTomorrow(),
+      },
+      ...(input.mealType ? { mealType: input.mealType } : {}),
+    },
+    include: { items: true },
+    orderBy: { date: "desc" },
+  });
+  const normalizedTitle = input.title ? normalizeLookup(input.title) : "";
+  const meal =
+    normalizedTitle.length > 0
+      ? meals.find((item) =>
+          normalizeLookup(`${item.title ?? ""} ${item.items.map((mealItem) => mealItem.name).join(" ")}`).includes(
+            normalizedTitle,
+          ),
+        )
+      : meals[0];
+
+  if (!meal) {
+    return null;
+  }
+
+  await prisma.meal.delete({
+    where: {
+      id: meal.id,
+      userId: user.id,
+    },
+  });
+
+  return {
+    id: meal.id,
+    title: meal.title ?? titleCaseMealType(meal.mealType),
+    mealType: meal.mealType,
+  };
+}
+
+export async function updateTodayMealNutrientForCurrentUser(input: {
+  mealType: MealType;
+  nutrient: "calories" | "protein" | "carbs" | "fat" | "fiber" | "sugar" | "sodium";
+  value: number;
+}) {
+  const user = await getCurrentOrDemoAppUser();
+  const meal = await prisma.meal.findFirst({
+    where: {
+      userId: user.id,
+      mealType: input.mealType,
+      date: {
+        gte: startOfToday(),
+        lt: startOfTomorrow(),
+      },
+    },
+    include: { items: true },
+    orderBy: { date: "desc" },
+  });
+  const item = meal?.items[0];
+
+  if (!meal || !item) {
+    return null;
+  }
+
+  await prisma.mealItem.update({
+    where: {
+      id: item.id,
+      mealId: meal.id,
+    },
+    data: {
+      [input.nutrient]: input.value,
+    },
+  });
+
+  return {
+    id: meal.id,
+    itemId: item.id,
+    title: meal.title ?? titleCaseMealType(meal.mealType),
+    mealType: meal.mealType,
+    nutrient: input.nutrient,
+    value: input.value,
+  };
+}
+
 export function toMealType(mealType: string) {
   const mealTypes: Record<string, MealType> = {
     breakfast: MealType.breakfast,
@@ -195,4 +284,16 @@ function normalizeLookup(value: string) {
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function startOfToday() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function startOfTomorrow() {
+  const date = startOfToday();
+  date.setDate(date.getDate() + 1);
+  return date;
 }

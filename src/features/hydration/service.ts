@@ -68,6 +68,36 @@ export async function deleteHydrationLogForDemoUser(logId: string) {
   });
 }
 
+export async function deleteLatestHydrationLogForCurrentUser() {
+  const user = await getCurrentOrDemoAppUser();
+  const log = await prisma.hydrationLog.findFirst({
+    where: {
+      userId: user.id,
+      loggedAt: {
+        gte: startOfToday(),
+        lt: startOfTomorrow(),
+      },
+    },
+    orderBy: { loggedAt: "desc" },
+  });
+
+  if (!log) {
+    return null;
+  }
+
+  await prisma.hydrationLog.delete({
+    where: {
+      id: log.id,
+      userId: user.id,
+    },
+  });
+
+  return {
+    id: log.id,
+    amountMl: log.amountMl,
+  };
+}
+
 export function normalizeWaterAmount(amountMl: number) {
   if (!Number.isFinite(amountMl) || amountMl < 50 || amountMl > 3000) {
     return null;

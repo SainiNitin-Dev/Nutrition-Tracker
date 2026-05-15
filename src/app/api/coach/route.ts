@@ -7,12 +7,15 @@ import { getCoachNutritionContext } from "@/features/coach/context";
 import { buildCoachSystemPrompt } from "@/features/coach/prompt";
 import {
   createMealForDemoUser,
+  deleteTodayMealForCurrentUser,
   findMealTemplateForCurrentUserByName,
   logMealTemplateForCurrentUser,
   toMealType,
+  updateTodayMealNutrientForCurrentUser,
 } from "@/features/meals/service";
 import {
   addHydrationLogForDemoUser,
+  deleteLatestHydrationLogForCurrentUser,
   normalizeWaterAmount,
 } from "@/features/hydration/service";
 import {
@@ -48,6 +51,15 @@ export async function POST(request: Request) {
   const waterAmount = latestUserMessage
     ? extractWaterAmountMl(latestUserMessage.content)
     : null;
+  const deleteHydrationRequest = latestUserMessage
+    ? extractDeleteHydrationRequest(latestUserMessage.content)
+    : null;
+  const deleteMealRequest = latestUserMessage
+    ? extractDeleteMealRequest(latestUserMessage.content)
+    : null;
+  const mealNutrientUpdate = latestUserMessage
+    ? extractMealNutrientUpdate(latestUserMessage.content)
+    : null;
   const savedMealRequest = latestUserMessage
     ? extractSavedMealLookup(latestUserMessage.content, context.savedMeals)
     : null;
@@ -60,6 +72,51 @@ export async function POST(request: Request) {
   const supplementRequest = latestUserMessage
     ? extractSupplementRequest(latestUserMessage.content)
     : null;
+
+  if (deleteHydrationRequest) {
+    const result = await deleteLatestHydrationFromCoach();
+
+    return new Response(
+      result
+        ? `Removed your latest water log of ${result.amountMl}ml.`
+        : "I could not find a water log from today to remove.",
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
+
+  if (deleteMealRequest) {
+    const result = await deleteMealFromCoach(deleteMealRequest);
+
+    return new Response(
+      result
+        ? `Removed ${result.title} from today's ${result.mealType} log.`
+        : `I could not find a matching ${deleteMealRequest.mealType ?? "meal"} from today to remove.`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
+
+  if (mealNutrientUpdate) {
+    const result = await updateMealNutrientFromCoach(mealNutrientUpdate);
+
+    return new Response(
+      result
+        ? `Updated ${result.title}: ${result.nutrient} is now ${result.value}${result.nutrient === "calories" ? " kcal" : "g"}.`
+        : `I could not find a ${mealNutrientUpdate.mealType} meal from today to update.`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
 
   if (waterAmount) {
     const result = await addHydrationLog(waterAmount);
@@ -358,6 +415,82 @@ async function logSavedMealFromCoach(savedMealName: string) {
   };
 }
 
+async function deleteLatestHydrationFromCoach() {
+  const result = await deleteLatestHydrationLogForCurrentUser();
+  const user = await getCurrentOrDemoAppUser();
+
+  await prisma.aiActionLog.create({
+    data: {
+      userId: user.id,
+      actionType: "deleteHydrationLog",
+      payloadJson: {
+        hydrationLogId: result?.id ?? null,
+        amountMl: result?.amountMl ?? null,
+      },
+      status: result ? "applied" : "failed",
+      error: result ? null : "No hydration log found.",
+    },
+  });
+
+  return result;
+}
+
+async function deleteMealFromCoach(input: {
+  mealType?: SimpleMealRequest["mealType"];
+  title?: string;
+}) {
+  const result = await deleteTodayMealForCurrentUser({
+    mealType: input.mealType ? toMealType(input.mealType) : undefined,
+    title: input.title,
+  });
+  const user = await getCurrentOrDemoAppUser();
+
+  await prisma.aiActionLog.create({
+    data: {
+      userId: user.id,
+      actionType: "deleteMeal",
+      payloadJson: {
+        requestedMealType: input.mealType ?? null,
+        requestedTitle: input.title ?? null,
+        mealId: result?.id ?? null,
+      },
+      status: result ? "applied" : "failed",
+      error: result ? null : "No matching meal found.",
+    },
+  });
+
+  return result;
+}
+
+async function updateMealNutrientFromCoach(input: {
+  mealType: SimpleMealRequest["mealType"];
+  nutrient: "calories" | "protein" | "carbs" | "fat" | "fiber" | "sugar" | "sodium";
+  value: number;
+}) {
+  const result = await updateTodayMealNutrientForCurrentUser({
+    mealType: toMealType(input.mealType),
+    nutrient: input.nutrient,
+    value: input.value,
+  });
+  const user = await getCurrentOrDemoAppUser();
+
+  await prisma.aiActionLog.create({
+    data: {
+      userId: user.id,
+      actionType: "updateMealNutrition",
+      payloadJson: {
+        ...input,
+        mealId: result?.id ?? null,
+        itemId: result?.itemId ?? null,
+      },
+      status: result ? "applied" : "failed",
+      error: result ? null : "No matching meal found.",
+    },
+  });
+
+  return result;
+}
+
 type SimpleMealRequest = {
   mealType: "breakfast" | "lunch" | "dinner" | "snack";
   text: string;
@@ -434,6 +567,69 @@ function extractWaterAmountMl(text: string) {
   return null;
 }
 
+function extractDeleteHydrationRequest(text: string) {
+  const normalized = text.trim().toLowerCase();
+
+  return /\b(delete|remove|undo)\b/.test(normalized) &&
+    /\b(water|hydration)\b/.test(normalized)
+    ? true
+    : null;
+}
+
+function extractDeleteMealRequest(
+  text: string,
+): { mealType?: SimpleMealRequest["mealType"]; title?: string } | null {
+  const normalized = text.trim().toLowerCase();
+
+  if (!/\b(delete|remove|undo)\b/.test(normalized)) {
+    return null;
+  }
+
+  const mealType = extractMealType(normalized);
+
+  if (!mealType && !/\b(meal|food|plate)\b/.test(normalized)) {
+    return null;
+  }
+
+  return {
+    mealType,
+    title: cleanDeleteMealTitle(text, mealType),
+  };
+}
+
+function extractMealNutrientUpdate(
+  text: string,
+): {
+  mealType: SimpleMealRequest["mealType"];
+  nutrient: "calories" | "protein" | "carbs" | "fat" | "fiber" | "sugar" | "sodium";
+  value: number;
+} | null {
+  const normalized = text.trim().toLowerCase();
+
+  if (!/\b(change|set|update|adjust)\b/.test(normalized)) {
+    return null;
+  }
+
+  const mealType = extractMealType(normalized);
+
+  if (!mealType) {
+    return null;
+  }
+
+  const nutrient = extractNutrient(normalized);
+  const valueMatch = normalized.match(/\b(?:to|as|at)\s*(\d+(?:\.\d+)?)\s*(?:g|grams?|kcal|calories?|mg)?\b/);
+
+  if (!nutrient || !valueMatch) {
+    return null;
+  }
+
+  return {
+    mealType,
+    nutrient,
+    value: Math.round(Number(valueMatch[1])),
+  };
+}
+
 function extractSavedMealLookup(
   text: string,
   savedMeals: Array<{ title: string }>,
@@ -460,6 +656,63 @@ function extractSavedMealLookup(
   }
 
   return null;
+}
+
+function extractMealType(value: string): SimpleMealRequest["mealType"] | undefined {
+  const match = value.match(/\b(breakfast|lunch|dinner|snack)\b/);
+
+  return match?.[1] as SimpleMealRequest["mealType"] | undefined;
+}
+
+function extractNutrient(
+  value: string,
+): "calories" | "protein" | "carbs" | "fat" | "fiber" | "sugar" | "sodium" | null {
+  if (/\b(calorie|calories|kcal)\b/.test(value)) {
+    return "calories";
+  }
+
+  if (/\bprotein\b/.test(value)) {
+    return "protein";
+  }
+
+  if (/\bcarb|carbs|carbohydrate|carbohydrates\b/.test(value)) {
+    return "carbs";
+  }
+
+  if (/\bfat|fats\b/.test(value)) {
+    return "fat";
+  }
+
+  if (/\bfiber|fibre\b/.test(value)) {
+    return "fiber";
+  }
+
+  if (/\bsugar\b/.test(value)) {
+    return "sugar";
+  }
+
+  if (/\bsodium|salt\b/.test(value)) {
+    return "sodium";
+  }
+
+  return null;
+}
+
+function cleanDeleteMealTitle(
+  value: string,
+  mealType?: SimpleMealRequest["mealType"],
+) {
+  let cleaned = value
+    .replace(/\b(delete|remove|undo)\b/gi, "")
+    .replace(/\b(my|the|today|from|log|meal|food|plate)\b/gi, "")
+
+  if (mealType) {
+    cleaned = cleaned.replace(new RegExp(`\\b${mealType}\\b`, "gi"), "");
+  }
+
+  cleaned = cleaned.replace(/\s+/g, " ").trim();
+
+  return cleaned.length >= 3 ? cleaned : undefined;
 }
 
 function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
