@@ -18,6 +18,11 @@ export const coachToolRegistry: CoachToolDefinition[] = [
     requiresConfirmation: false,
   },
   {
+    name: "logSavedMeal",
+    description: "Log a meal from the user's personal saved meal library.",
+    requiresConfirmation: false,
+  },
+  {
     name: "updateMealNutrition",
     description: "Update nutrient values for a specific meal or meal item.",
     requiresConfirmation: true,

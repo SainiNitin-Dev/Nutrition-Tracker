@@ -10,6 +10,7 @@ export const groqConfig = {
 export type CoachToolName =
   | "addHydrationLog"
   | "createMealFromText"
+  | "logSavedMeal"
   | "updateMealNutrition"
   | "deleteMeal"
   | "markSupplementTaken"

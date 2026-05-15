@@ -5,7 +5,12 @@ import { prisma } from "@/lib/prisma/client";
 import { LogSource, SupplementLogStatus } from "@/generated/prisma/client";
 import { getCoachNutritionContext } from "@/features/coach/context";
 import { buildCoachSystemPrompt } from "@/features/coach/prompt";
-import { createMealForDemoUser, toMealType } from "@/features/meals/service";
+import {
+  createMealForDemoUser,
+  findMealTemplateForCurrentUserByName,
+  logMealTemplateForCurrentUser,
+  toMealType,
+} from "@/features/meals/service";
 import {
   addHydrationLogForDemoUser,
   normalizeWaterAmount,
@@ -43,6 +48,9 @@ export async function POST(request: Request) {
   const waterAmount = latestUserMessage
     ? extractWaterAmountMl(latestUserMessage.content)
     : null;
+  const savedMealRequest = latestUserMessage
+    ? extractSavedMealLookup(latestUserMessage.content, context.savedMeals)
+    : null;
   const mealRequest = latestUserMessage
     ? extractSimpleMealRequest(latestUserMessage.content)
     : null;
@@ -55,6 +63,32 @@ export async function POST(request: Request) {
 
     return new Response(
       `Logged ${result.amountMl}ml of water. You are now at ${result.totalMl}ml for today, about ${result.percent}% of your goal.`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
+
+  if (savedMealRequest?.title) {
+    const result = await logSavedMealFromCoach(savedMealRequest.title);
+
+    if (result) {
+      return new Response(
+        `Logged your saved meal: ${result.title}. That adds ${result.calories} kcal, ${result.protein}g protein, ${result.carbs}g carbs, and ${result.fat}g fat to today.`,
+        {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+          },
+        },
+      );
+    }
+  }
+
+  if (savedMealRequest?.intent) {
+    return new Response(
+      `I could not find "${savedMealRequest.requestedName}" in your saved meals yet. Save it from the Meals page first, then I can log it for you in one message.`,
       {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
@@ -168,6 +202,39 @@ export async function POST(request: Request) {
           };
         },
       }),
+      logSavedMeal: tool({
+        description:
+          "Log one meal from the user's personal saved meal library. Use this when the user names a saved meal or asks to repeat a saved meal.",
+        inputSchema: z.object({
+          savedMealName: z
+            .string()
+            .min(2)
+            .max(120)
+            .describe("The title or close name of the saved meal to log."),
+        }),
+        execute: async ({ savedMealName }) => {
+          const result = await logSavedMealFromCoach(savedMealName);
+
+          return result
+            ? {
+                ok: true,
+                mealId: result.mealId,
+                templateId: result.templateId,
+                title: result.title,
+                mealType: result.mealType,
+                totals: {
+                  calories: result.calories,
+                  protein: result.protein,
+                  carbs: result.carbs,
+                  fat: result.fat,
+                },
+              }
+            : {
+                ok: false,
+                error: "Saved meal not found.",
+              };
+        },
+      }),
       markSupplement: tool({
         description:
           "Mark an active supplement as taken or skipped when the user clearly asks to update a supplement.",
@@ -228,6 +295,51 @@ async function logSupplementFromCoach(
   });
 
   return supplement;
+}
+
+async function logSavedMealFromCoach(savedMealName: string) {
+  const template = await findMealTemplateForCurrentUserByName(savedMealName);
+
+  if (!template) {
+    return null;
+  }
+
+  const meal = await logMealTemplateForCurrentUser(template.id, LogSource.coach);
+  const user = await getCurrentOrDemoAppUser();
+  const totals = template.items.reduce(
+    (sum, item) => ({
+      calories: sum.calories + Number(item.calories),
+      protein: sum.protein + Number(item.protein),
+      carbs: sum.carbs + Number(item.carbs),
+      fat: sum.fat + Number(item.fat),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  );
+
+  await prisma.aiActionLog.create({
+    data: {
+      userId: user.id,
+      actionType: "logSavedMeal",
+      payloadJson: {
+        mealId: meal.id,
+        templateId: template.id,
+        title: template.title,
+        mealType: template.mealType,
+      },
+      status: "applied",
+    },
+  });
+
+  return {
+    mealId: meal.id,
+    templateId: template.id,
+    title: template.title,
+    mealType: template.mealType,
+    calories: Math.round(totals.calories),
+    protein: Math.round(totals.protein),
+    carbs: Math.round(totals.carbs),
+    fat: Math.round(totals.fat),
+  };
 }
 
 type SimpleMealRequest = {
@@ -306,6 +418,34 @@ function extractWaterAmountMl(text: string) {
   return null;
 }
 
+function extractSavedMealLookup(
+  text: string,
+  savedMeals: Array<{ title: string }>,
+): { title?: string; intent?: boolean; requestedName?: string } | null {
+  const normalized = normalizeLookup(text);
+
+  if (!/\b(add|log|repeat|ate|had)\b/.test(normalized)) {
+    return null;
+  }
+
+  const matchingMeal = savedMeals.find((meal) =>
+    normalized.includes(normalizeLookup(meal.title)),
+  );
+
+  if (matchingMeal) {
+    return { title: matchingMeal.title };
+  }
+
+  if (/\b(saved|usual|regular|repeat|same|my)\b/.test(normalized)) {
+    return {
+      intent: true,
+      requestedName: cleanSavedMealName(text),
+    };
+  }
+
+  return null;
+}
+
 function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
   const normalized = text.trim().toLowerCase();
 
@@ -336,6 +476,24 @@ function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
     mealType: mealTypeMatch[1] as SimpleMealRequest["mealType"],
     text: withoutCommand,
   };
+}
+
+function normalizeLookup(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function cleanSavedMealName(value: string) {
+  const cleaned = value
+    .replace(/\b(add|log|repeat|ate|had)\b/gi, "")
+    .replace(/\b(my|saved|usual|regular|same|meal|for|as|today)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned || "that meal";
 }
 
 function extractSupplementRequest(

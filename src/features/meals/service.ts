@@ -93,7 +93,10 @@ export async function saveMealAsTemplateForCurrentUser(mealId: string) {
   });
 }
 
-export async function logMealTemplateForCurrentUser(templateId: string) {
+export async function logMealTemplateForCurrentUser(
+  templateId: string,
+  source: LogSource = LogSource.manual,
+) {
   const user = await getCurrentOrDemoAppUser();
   const template = await prisma.mealTemplate.findUnique({
     where: {
@@ -116,7 +119,7 @@ export async function logMealTemplateForCurrentUser(templateId: string) {
       mealType: template.mealType,
       title: template.title,
       notes: template.notes,
-      source: LogSource.manual,
+      source,
       items: {
         create: template.items.map((item) => ({
           name: item.name,
@@ -137,6 +140,27 @@ export async function logMealTemplateForCurrentUser(templateId: string) {
       items: true,
     },
   });
+}
+
+export async function findMealTemplateForCurrentUserByName(templateName: string) {
+  const user = await getCurrentOrDemoAppUser();
+  const normalized = normalizeLookup(templateName);
+  const templates = await prisma.mealTemplate.findMany({
+    where: { userId: user.id },
+    include: { items: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  return (
+    templates.find((template) => normalizeLookup(template.title) === normalized) ??
+    templates.find((template) =>
+      normalizeLookup(template.title).includes(normalized),
+    ) ??
+    templates.find((template) =>
+      normalized.includes(normalizeLookup(template.title)),
+    ) ??
+    null
+  );
 }
 
 export async function deleteMealTemplateForCurrentUser(templateId: string) {
@@ -163,4 +187,12 @@ export function toMealType(mealType: string) {
 
 function titleCaseMealType(mealType: MealType) {
   return mealType.charAt(0).toUpperCase() + mealType.slice(1);
+}
+
+function normalizeLookup(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

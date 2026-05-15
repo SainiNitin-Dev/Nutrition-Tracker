@@ -25,6 +25,10 @@ export async function getCoachNutritionContext() {
         include: { items: true },
         orderBy: { date: "asc" },
       },
+      mealTemplates: {
+        include: { items: true },
+        orderBy: { updatedAt: "desc" },
+      },
       hydrationLogs: {
         where: {
           loggedAt: {
@@ -87,6 +91,27 @@ export async function getCoachNutritionContext() {
   const dailyTotals = addNutrientTotals(
     mealSummaries.map((meal) => meal.totals),
   );
+  const savedMeals = user.mealTemplates.map((template) => {
+    const totals = addNutrientTotals(
+      template.items.map((item) => ({
+        calories: Number(item.calories),
+        protein: Number(item.protein),
+        carbs: Number(item.carbs),
+        fat: Number(item.fat),
+        fiber: Number(item.fiber ?? 0),
+        sugar: Number(item.sugar ?? 0),
+        sodium: Number(item.sodium ?? 0),
+      })),
+    );
+
+    return {
+      id: template.id,
+      title: template.title,
+      mealType: template.mealType,
+      items: template.items.map((item) => item.name),
+      totals,
+    };
+  });
   const hydrationMl = user.hydrationLogs.reduce(
     (sum, log) => sum + log.amountMl,
     0,
@@ -117,6 +142,7 @@ export async function getCoachNutritionContext() {
       })),
     },
     meals: mealSummaries,
+    savedMeals,
     supplements: user.supplements.map((supplement) => ({
       id: supplement.id,
       name: supplement.name,
