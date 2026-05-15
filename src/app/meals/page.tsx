@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Flame, Plus, Salad, Sparkles, Trash2 } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { addManualMealAction, deleteMealAction } from "@/features/meals/actions";
 import { getMealTrackerData } from "@/features/meals/queries";
 
@@ -172,10 +173,13 @@ function MealForm() {
         </div>
       </div>
 
-      <button className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800">
+      <PendingSubmitButton
+        className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
+        pendingLabel="Adding meal..."
+      >
         <Plus size={17} aria-hidden />
         Add meal
-      </button>
+      </PendingSubmitButton>
     </form>
   );
 }
@@ -289,15 +293,13 @@ function MealList({
 
                 <form action={deleteMealAction}>
                   <input name="mealId" type="hidden" value={meal.id} />
-                  <button
+                  <PendingSubmitButton
                     aria-label={`Delete ${meal.title}`}
                     className="grid size-10 place-items-center rounded-full border border-rose-100 bg-white text-rose-500 transition hover:-translate-y-0.5 hover:bg-rose-50"
                     title="Delete meal"
-                    type="submit"
                   >
                     <Trash2 size={16} aria-hidden />
-                    <span className="sr-only">Delete meal</span>
-                  </button>
+                  </PendingSubmitButton>
                 </form>
               </div>
 

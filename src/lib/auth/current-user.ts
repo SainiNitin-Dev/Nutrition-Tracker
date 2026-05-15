@@ -1,9 +1,15 @@
 import { redirect } from "next/navigation";
+import { cache } from "react";
+import { cookies } from "next/headers";
 import { demoUserEmail } from "@/lib/demo";
 import { prisma } from "@/lib/prisma/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function getCurrentAppUser() {
+export const getCurrentAppUser = cache(async () => {
+  if (!(await hasSupabaseAuthCookie())) {
+    return null;
+  }
+
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -37,7 +43,7 @@ export async function getCurrentAppUser() {
       },
     },
   });
-}
+});
 
 export async function requireCurrentAppUser() {
   const user = await getCurrentAppUser();
@@ -59,4 +65,12 @@ export async function getCurrentOrDemoAppUser() {
   return prisma.user.findUniqueOrThrow({
     where: { email: demoUserEmail },
   });
+}
+
+async function hasSupabaseAuthCookie() {
+  const cookieStore = await cookies();
+
+  return cookieStore
+    .getAll()
+    .some((cookie) => cookie.name.startsWith("sb-") && cookie.name.includes("auth-token"));
 }

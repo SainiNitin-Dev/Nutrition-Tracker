@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Droplets, Plus, Trash2, Waves } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import {
   addHydrationAction,
   deleteHydrationAction,
@@ -146,9 +147,12 @@ function HydrationControl({
         {quickAdds.map((amount) => (
           <form action={addHydrationAction} key={amount}>
             <input name="amountMl" type="hidden" value={amount} />
-            <button className="h-12 w-full rounded-full border border-blue-100 bg-blue-50 text-sm font-semibold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100">
+            <PendingSubmitButton
+              className="h-12 w-full rounded-full border border-blue-100 bg-blue-50 text-sm font-semibold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-100 disabled:cursor-wait disabled:opacity-70"
+              pendingLabel="Adding..."
+            >
               +{amount}ml
-            </button>
+            </PendingSubmitButton>
           </form>
         ))}
       </div>
@@ -166,14 +170,12 @@ function HydrationControl({
           required
           type="text"
         />
-        <button
+        <PendingSubmitButton
           className="grid size-12 shrink-0 place-items-center rounded-full bg-slate-950 text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5"
           title="Add custom water"
-          type="submit"
         >
           <Plus size={18} aria-hidden />
-          <span className="sr-only">Add custom water</span>
-        </button>
+        </PendingSubmitButton>
       </form>
     </section>
   );
@@ -224,14 +226,13 @@ function HydrationLog({
 
               <form action={deleteHydrationAction}>
                 <input name="logId" type="hidden" value={log.id} />
-                <button
+                <PendingSubmitButton
                   aria-label={`Delete ${log.amountMl}ml water log`}
                   className="grid size-10 place-items-center rounded-full border border-rose-100 bg-white text-rose-500 transition hover:-translate-y-0.5 hover:bg-rose-50"
                   title="Delete water log"
-                  type="submit"
                 >
                   <Trash2 size={16} aria-hidden />
-                </button>
+                </PendingSubmitButton>
               </form>
             </article>
           ))

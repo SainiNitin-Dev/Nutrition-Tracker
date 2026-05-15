@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Check, Clock3, Pill, RotateCcw, X } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import {
   markSupplementSkippedAction,
   markSupplementTakenAction,
@@ -213,25 +214,23 @@ function SupplementList({
               <div className="flex gap-2">
                 <form action={markSupplementTakenAction}>
                   <input name="supplementId" type="hidden" value={supplement.id} />
-                  <button
+                  <PendingSubmitButton
                     aria-label={`Mark ${supplement.name} taken`}
                     className="grid size-10 place-items-center rounded-full border border-emerald-100 bg-white text-emerald-600 transition hover:-translate-y-0.5 hover:bg-emerald-50"
                     title="Mark taken"
-                    type="submit"
                   >
                     <Check size={16} aria-hidden />
-                  </button>
+                  </PendingSubmitButton>
                 </form>
                 <form action={markSupplementSkippedAction}>
                   <input name="supplementId" type="hidden" value={supplement.id} />
-                  <button
+                  <PendingSubmitButton
                     aria-label={`Skip ${supplement.name}`}
                     className="grid size-10 place-items-center rounded-full border border-rose-100 bg-white text-rose-500 transition hover:-translate-y-0.5 hover:bg-rose-50"
                     title="Skip supplement"
-                    type="submit"
                   >
                     <X size={16} aria-hidden />
-                  </button>
+                  </PendingSubmitButton>
                 </form>
               </div>
             </div>

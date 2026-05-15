@@ -7,6 +7,7 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { CoachChatPanel } from "@/features/coach/components/coach-chat-panel";
 import { addHydrationAction } from "@/features/hydration/actions";
 import { dashboardNav, nutritionSignals } from "../data";
@@ -345,9 +346,12 @@ function HydrationPanel({
         {hydration.quickAdds.map((amount) => (
           <form action={addHydrationAction} key={amount}>
             <input name="amountMl" type="hidden" value={amount} />
-            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <PendingSubmitButton
+              className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-70"
+              pendingLabel="Adding..."
+            >
               +{amount} ml
-            </button>
+            </PendingSubmitButton>
           </form>
         ))}
       </div>
