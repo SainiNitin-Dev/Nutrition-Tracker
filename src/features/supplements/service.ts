@@ -1,6 +1,46 @@
 import { LogSource, SupplementLogStatus } from "@/generated/prisma/client";
 import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
+import type { SupplementInput } from "./schemas";
+
+export async function createSupplementForCurrentUser(input: SupplementInput) {
+  const user = await getCurrentOrDemoAppUser();
+
+  return prisma.supplement.create({
+    data: {
+      userId: user.id,
+      name: input.name,
+      dosageAmount: input.dosageAmount,
+      dosageUnit: input.dosageUnit,
+      purpose: input.purpose || null,
+      instructions: input.instructions || null,
+      schedules: {
+        create: {
+          timeOfDay: input.timeOfDay,
+          daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
+          reminderEnabled: true,
+        },
+      },
+    },
+    include: {
+      schedules: true,
+    },
+  });
+}
+
+export async function deactivateSupplementForCurrentUser(supplementId: string) {
+  const user = await getCurrentOrDemoAppUser();
+
+  return prisma.supplement.update({
+    where: {
+      id: supplementId,
+      userId: user.id,
+    },
+    data: {
+      active: false,
+    },
+  });
+}
 
 export async function logSupplementForDemoUser(
   supplementId: string,

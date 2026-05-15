@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, Check, Clock3, Pill, RotateCcw, X } from "lucide-react";
+import { ArrowLeft, Check, Clock3, Pill, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import {
+  addSupplementAction,
+  deleteSupplementAction,
   markSupplementSkippedAction,
   markSupplementTakenAction,
 } from "@/features/supplements/actions";
@@ -13,6 +15,8 @@ type SupplementsPageProps = {
   searchParams: Promise<{
     taken?: string;
     skipped?: string;
+    added?: string;
+    deleted?: string;
     error?: string;
   }>;
 };
@@ -43,7 +47,7 @@ export default async function SupplementsPage({
               <div>
                 <p className="text-sm font-medium text-blue-600">Supplements</p>
                 <h1 className="text-3xl font-semibold tracking-tight">
-                  Today’s supplement schedule
+                  {"Today's supplement schedule"}
                 </h1>
               </div>
             </div>
@@ -55,8 +59,10 @@ export default async function SupplementsPage({
           </div>
         </header>
 
+        {params.added && <Notice tone="success">Supplement added to your stack.</Notice>}
         {params.taken && <Notice tone="success">Supplement marked as taken.</Notice>}
         {params.skipped && <Notice tone="success">Supplement marked as skipped.</Notice>}
+        {params.deleted && <Notice tone="success">Supplement removed from active schedule.</Notice>}
         {params.error && (
           <Notice tone="error">
             Could not update that supplement. Refresh and try again.
@@ -64,11 +70,14 @@ export default async function SupplementsPage({
         )}
 
         <section className="grid gap-5 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <ProgressPanel
-            completionPercent={completionPercent}
-            skippedCount={data.skippedCount}
-            total={data.supplements.length}
-          />
+          <div className="grid gap-5">
+            <AddSupplementForm />
+            <ProgressPanel
+              completionPercent={completionPercent}
+              skippedCount={data.skippedCount}
+              total={data.supplements.length}
+            />
+          </div>
           <SupplementList supplements={data.supplements} />
         </section>
       </div>
@@ -104,6 +113,114 @@ function Notice({
     >
       {children}
     </div>
+  );
+}
+
+function AddSupplementForm() {
+  return (
+    <form
+      action={addSupplementAction}
+      className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]"
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Build your stack</p>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Add supplement</h2>
+        </div>
+        <div className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-600">
+          <Plus size={20} aria-hidden />
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4">
+        <TextInput label="Name" name="name" placeholder="Creatine" />
+
+        <div className="grid grid-cols-[1fr_0.8fr] gap-3">
+          <NumberInput label="Dosage" name="dosageAmount" placeholder="5" />
+          <TextInput label="Unit" name="dosageUnit" placeholder="g" />
+        </div>
+
+        <TextInput
+          label="Purpose"
+          name="purpose"
+          placeholder="Strength and power"
+          required={false}
+        />
+        <TextInput
+          label="Instructions"
+          name="instructions"
+          placeholder="After lunch"
+          required={false}
+        />
+
+        <label className="grid gap-2 text-sm font-medium text-slate-700">
+          Time
+          <input
+            className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+            defaultValue="09:00"
+            name="timeOfDay"
+            required
+            type="time"
+          />
+        </label>
+      </div>
+
+      <PendingSubmitButton
+        className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
+        pendingLabel="Adding..."
+      >
+        <Plus size={17} aria-hidden />
+        Add supplement
+      </PendingSubmitButton>
+    </form>
+  );
+}
+
+function TextInput({
+  label,
+  name,
+  placeholder,
+  required = true,
+}: {
+  label: string;
+  name: string;
+  placeholder: string;
+  required?: boolean;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium text-slate-700">
+      {label}
+      <input
+        className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+        name={name}
+        placeholder={placeholder}
+        required={required}
+      />
+    </label>
+  );
+}
+
+function NumberInput({
+  label,
+  name,
+  placeholder,
+}: {
+  label: string;
+  name: string;
+  placeholder: string;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium text-slate-700">
+      {label}
+      <input
+        className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+        inputMode="decimal"
+        name={name}
+        placeholder={placeholder}
+        required
+        type="text"
+      />
+    </label>
   );
 }
 
@@ -179,7 +296,9 @@ function SupplementList({
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500">Schedule</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Today’s stack</h2>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
+            {"Today's stack"}
+          </h2>
         </div>
         <span className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700">
           {supplements.length} active
@@ -187,7 +306,15 @@ function SupplementList({
       </div>
 
       <div className="mt-6 grid gap-4">
-        {supplements.map((supplement) => (
+        {supplements.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+            <p className="font-semibold text-slate-950">No active supplements yet.</p>
+            <p className="mt-2 text-sm text-slate-500">
+              {"Add your first supplement and it will appear in today's schedule."}
+            </p>
+          </div>
+        ) : (
+          supplements.map((supplement) => (
           <article
             className="rounded-3xl border border-slate-100 bg-slate-50/80 p-4"
             key={supplement.id}
@@ -207,7 +334,7 @@ function SupplementList({
                   {supplement.name}
                 </h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  {supplement.dose} · {supplement.purpose}
+                  {supplement.dose} | {supplement.purpose}
                 </p>
               </div>
 
@@ -232,6 +359,16 @@ function SupplementList({
                     <X size={16} aria-hidden />
                   </PendingSubmitButton>
                 </form>
+                <form action={deleteSupplementAction}>
+                  <input name="supplementId" type="hidden" value={supplement.id} />
+                  <PendingSubmitButton
+                    aria-label={`Remove ${supplement.name}`}
+                    className="grid size-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-100"
+                    title="Remove supplement"
+                  >
+                    <Trash2 size={16} aria-hidden />
+                  </PendingSubmitButton>
+                </form>
               </div>
             </div>
 
@@ -242,7 +379,8 @@ function SupplementList({
               </div>
             )}
           </article>
-        ))}
+          ))
+        )}
       </div>
     </section>
   );
