@@ -1,43 +1,29 @@
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { cookies } from "next/headers";
 import { demoUserEmail } from "@/lib/demo";
 import { prisma } from "@/lib/prisma/client";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const getCurrentAppUser = cache(async () => {
-  if (!(await hasSupabaseAuthCookie())) {
-    return null;
-  }
+  const claims = await getVerifiedSupabaseClaims();
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user?.email) {
+  if (!claims?.email) {
     return null;
   }
 
   const existingUser = await prisma.user.findUnique({
-    where: { email: user.email },
+    where: { email: claims.email },
   });
 
   if (existingUser) {
-    return prisma.user.update({
-      where: { id: existingUser.id },
-      data: {
-        imageUrl: user.user_metadata?.avatar_url ?? existingUser.imageUrl,
-      },
-    });
+    return existingUser;
   }
 
   return prisma.user.create({
     data: {
-      email: user.email,
-      name: user.user_metadata?.name ?? user.user_metadata?.full_name ?? user.email.split("@")[0],
-      imageUrl: user.user_metadata?.avatar_url ?? null,
+      email: claims.email,
+      name: claims.name ?? claims.email.split("@")[0],
+      imageUrl: claims.imageUrl ?? null,
       profile: {
         create: {
           timezone: "Asia/Calcutta",
@@ -88,7 +74,9 @@ export async function getCurrentOrDemoAppUser() {
 }
 
 export async function getCurrentOrDemoUserWhereUnique() {
-  if (!(await hasSupabaseAuthCookie())) {
+  const claims = await getVerifiedSupabaseClaims();
+
+  if (!claims?.email) {
     return { email: demoUserEmail } as const;
   }
 
@@ -101,10 +89,34 @@ export async function getCurrentOrDemoUserWhereUnique() {
   return { email: demoUserEmail } as const;
 }
 
-async function hasSupabaseAuthCookie() {
-  const cookieStore = await cookies();
+type VerifiedSupabaseClaims = {
+  email?: string;
+  name?: string;
+  imageUrl?: string | null;
+};
 
-  return cookieStore
-    .getAll()
-    .some((cookie) => cookie.name.startsWith("sb-") && cookie.name.includes("auth-token"));
+async function getVerifiedSupabaseClaims(): Promise<VerifiedSupabaseClaims | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    return null;
+  }
+
+  const claims = data.claims as Record<string, unknown>;
+  const userMetadata = readRecord(claims.user_metadata);
+
+  return {
+    email: readString(claims.email),
+    name: readString(userMetadata?.name) ?? readString(userMetadata?.full_name),
+    imageUrl: readString(userMetadata?.avatar_url),
+  };
+}
+
+function readRecord(value: unknown) {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+}
+
+function readString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value : undefined;
 }
