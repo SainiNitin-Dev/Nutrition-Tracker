@@ -93,11 +93,13 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
         )}
 
         <section className="grid gap-5 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <div className="grid gap-5">
+          <div className="order-2 grid gap-5 lg:order-1">
             <MealForm />
             <SavedMealTemplates templates={data.templates} />
           </div>
-          <MealList meals={data.meals} />
+          <div className="order-1 lg:order-2">
+            <MealList meals={data.meals} />
+          </div>
         </section>
       </div>
     </main>
@@ -153,22 +155,49 @@ function Notice({
 }
 
 function MealForm() {
-  return (
-    <form
-      action={addManualMealAction}
-      className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]"
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500">Manual entry</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Add a meal</h2>
-        </div>
-        <div className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-600">
-          <Salad size={20} aria-hidden />
-        </div>
-      </div>
+  const content = <MealFormContent />;
 
-      <div className="mt-6 grid gap-4">
+  return (
+    <>
+      <details className="overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_24px_70px_rgba(30,41,59,0.08)] lg:hidden">
+        <summary className="flex cursor-pointer items-center justify-between p-5">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Manual entry</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">Add a meal</h2>
+          </div>
+          <div className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-600">
+            <Plus size={20} aria-hidden />
+          </div>
+        </summary>
+        <div className="border-t border-slate-100 p-5 pt-4">
+          <form action={addManualMealAction}>{content}</form>
+        </div>
+      </details>
+
+      <form
+        action={addManualMealAction}
+        className="hidden rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)] lg:block"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-slate-500">Manual entry</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">Add a meal</h2>
+          </div>
+          <div className="grid size-11 place-items-center rounded-2xl bg-blue-50 text-blue-600">
+            <Salad size={20} aria-hidden />
+          </div>
+        </div>
+
+        <div className="mt-6">{content}</div>
+      </form>
+    </>
+  );
+}
+
+function MealFormContent() {
+  return (
+    <>
+      <div className="grid gap-4">
         <label className="grid gap-2 text-sm font-medium text-slate-700">
           Meal type
           <select
@@ -186,7 +215,7 @@ function MealForm() {
         <TextInput label="Meal title" name="title" placeholder="Salmon rice bowl" />
         <TextInput label="Food item" name="itemName" placeholder="Salmon, rice, greens" />
 
-        <div className="grid grid-cols-[1fr_0.8fr] gap-3">
+        <div className="grid gap-3 sm:grid-cols-[1fr_0.8fr]">
           <NumberInput label="Quantity" name="quantity" placeholder="1" />
           <TextInput label="Unit" name="unit" placeholder="bowl" />
         </div>
@@ -208,7 +237,7 @@ function MealForm() {
         <Plus size={17} aria-hidden />
         Add meal
       </PendingSubmitButton>
-    </form>
+    </>
   );
 }
 

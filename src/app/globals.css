@@ -24,6 +24,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 * {
@@ -81,4 +87,12 @@ body {
 
 .animate-app-progress {
   animation: app-progress 1150ms ease-in-out infinite;
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
