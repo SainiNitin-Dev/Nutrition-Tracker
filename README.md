@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nourish AI 🥗
 
-## Getting Started
+An AI-powered nutrition, hydration, and supplement tracking app — built to help you stay on top of your daily health goals without the friction.
 
-First, run the development server:
+🔗 **Live:** [nourishnutrition.vercel.app](https://nourishnutrition.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Meal Logging** — Log meals naturally (e.g. "50g oats with 400g buffalo milk") and get automatic calorie and macro breakdowns
+- **Macro Tracking** — Daily targets for protein, carbs, fats, and fiber with visual progress
+- **Hydration Tracker** — Quick-add water intake with daily goal tracking
+- **Supplement Schedule** — Set up your stack with dosage and timing; mark doses as taken
+- **AI Coach** — Context-aware chat interface to log food, water, or ask nutrition questions in plain English
+- **Weekly Consistency Curve** — Visual summary of your week's adherence
+- **Streak Tracking** — Keeps you accountable day over day
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend:** Next.js, React, Tailwind CSS
+- **AI:** Groq API (LLaMA 3.3 70B) — powers the natural language coach
+- **Deployment:** Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Screenshots
 
-## Deploy on Vercel
+> Dashboard · Meals · Hydration · Supplements · AI Coach
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Author
+
+**Nitin Saini** — [@SainiNitin-Dev](https://github.com/SainiNitin-Dev)
