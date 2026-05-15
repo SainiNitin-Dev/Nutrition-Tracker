@@ -9,6 +9,10 @@ import {
 } from "@/features/coach/context";
 import { buildCoachSystemPrompt } from "@/features/coach/prompt";
 import { createMealForDemoUser, toMealType } from "@/features/meals/service";
+import {
+  addHydrationLogForDemoUser,
+  normalizeWaterAmount,
+} from "@/features/hydration/service";
 
 const coachMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -197,56 +201,7 @@ async function createCoachMeal(request: SimpleMealRequest) {
 }
 
 async function addHydrationLog(amountMl: number) {
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
-    include: {
-      goals: {
-        where: { isActive: true },
-        take: 1,
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
-
-  const log = await prisma.hydrationLog.create({
-    data: {
-      userId: user.id,
-      amountMl,
-      source: LogSource.coach,
-    },
-  });
-
-  await prisma.aiActionLog.create({
-    data: {
-      userId: user.id,
-      actionType: "addHydrationLog",
-      payloadJson: {
-        amountMl,
-        hydrationLogId: log.id,
-      },
-      status: "applied",
-    },
-  });
-
-  const todayLogs = await prisma.hydrationLog.findMany({
-    where: {
-      userId: user.id,
-      loggedAt: {
-        gte: startOfToday(),
-        lt: startOfTomorrow(),
-      },
-    },
-    select: { amountMl: true },
-  });
-  const totalMl = todayLogs.reduce((sum, item) => sum + item.amountMl, 0);
-  const goalMl = user.goals[0]?.waterMl ?? 3000;
-
-  return {
-    amountMl,
-    totalMl,
-    percent: Math.round((totalMl / goalMl) * 100),
-    loggedAt: log.loggedAt.toISOString(),
-  };
+  return addHydrationLogForDemoUser(amountMl, LogSource.coach);
 }
 
 function extractWaterAmountMl(text: string) {
@@ -329,22 +284,3 @@ function titleFromFoodText(text: string) {
     .join(" ");
 }
 
-function normalizeWaterAmount(amountMl: number) {
-  if (!Number.isFinite(amountMl) || amountMl < 50 || amountMl > 3000) {
-    return null;
-  }
-
-  return amountMl;
-}
-
-function startOfToday() {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-function startOfTomorrow() {
-  const date = startOfToday();
-  date.setDate(date.getDate() + 1);
-  return date;
-}

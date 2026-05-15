@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { CoachChatPanel } from "@/features/coach/components/coach-chat-panel";
+import { addHydrationAction } from "@/features/hydration/actions";
 import { dashboardNav, nutritionSignals } from "../data";
 import type { DashboardSnapshot, Macro } from "../data";
 
@@ -103,17 +104,27 @@ function Sidebar() {
         {dashboardNav.map((item, index) => {
           const Icon = item.icon;
           const isActive = index === 0;
+          const href =
+            item.label === "Meals"
+              ? "/meals"
+              : item.label === "Hydration"
+                ? "/hydration"
+                : item.label === "Supplements"
+                  ? "/supplements"
+                  : null;
+          const className = `group grid h-14 place-items-center rounded-2xl transition ${
+            isActive
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+              : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          }`;
 
-          return (
-            <button
-              className={`group grid h-14 place-items-center rounded-2xl transition ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-              key={item.label}
-              title={item.label}
-            >
+          return href ? (
+            <Link className={className} href={href} key={item.label} title={item.label}>
+              <Icon size={20} aria-hidden />
+              <span className="sr-only">{item.label}</span>
+            </Link>
+          ) : (
+            <button className={className} key={item.label} title={item.label}>
               <Icon size={20} aria-hidden />
               <span className="sr-only">{item.label}</span>
             </button>
@@ -326,14 +337,20 @@ function HydrationPanel({
 
       <div className="mt-6 flex flex-wrap gap-2">
         {hydration.quickAdds.map((amount) => (
-          <button
-            className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            key={amount}
-          >
-            +{amount} ml
-          </button>
+          <form action={addHydrationAction} key={amount}>
+            <input name="amountMl" type="hidden" value={amount} />
+            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+              +{amount} ml
+            </button>
+          </form>
         ))}
       </div>
+      <Link
+        className="mt-4 inline-flex text-sm font-semibold text-blue-700"
+        href="/hydration"
+      >
+        Open hydration tracker
+      </Link>
     </section>
   );
 }
@@ -383,7 +400,9 @@ function SupplementPanel({
           <p className="text-sm font-medium text-slate-500">Supplements</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight">Schedule</h2>
         </div>
-        <button className="text-sm font-medium text-blue-600">Manage</button>
+        <Link className="text-sm font-medium text-blue-600" href="/supplements">
+          Manage
+        </Link>
       </div>
 
       <div className="mt-5 grid gap-3">
@@ -450,6 +469,24 @@ function QuickActions({ actions }: { actions: DashboardSnapshot["quickActions"] 
               <Link
                 className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                 href="/meals"
+                key={action.label}
+              >
+                <Icon className="text-slate-700" size={20} aria-hidden />
+                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
+              </Link>
+            ) : action.label === "Water" ? (
+              <Link
+                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                href="/hydration"
+                key={action.label}
+              >
+                <Icon className="text-slate-700" size={20} aria-hidden />
+                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
+              </Link>
+            ) : action.label === "Supplement" ? (
+              <Link
+                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                href="/supplements"
                 key={action.label}
               >
                 <Icon className="text-slate-700" size={20} aria-hidden />
