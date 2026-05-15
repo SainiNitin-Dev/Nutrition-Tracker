@@ -39,13 +39,14 @@ export async function signInWithPasswordAction(formData: FormData) {
 
 export async function signUpWithPasswordAction(formData: FormData) {
   const { email, password } = readCredentials(formData);
+  const name = readName(formData, email);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        name: email.split("@")[0],
+        name,
       },
     },
   });
@@ -54,7 +55,7 @@ export async function signUpWithPasswordAction(formData: FormData) {
     redirect("/login?error=signup");
   }
 
-  await ensureAppUser(email);
+  await ensureAppUser(email, name);
   redirect("/onboarding");
 }
 
@@ -64,15 +65,23 @@ export async function signOutAction() {
   redirect("/login?signedOut=1");
 }
 
-async function ensureAppUser(email: string) {
+function readName(formData: FormData, email: string) {
+  const name = String(formData.get("name") ?? "").trim();
+
+  if (name.length > 80) {
+    redirect("/login?error=invalid-name");
+  }
+
+  return name || email.split("@")[0];
+}
+
+async function ensureAppUser(email: string, name?: string) {
   return prisma.user.upsert({
     where: { email },
-    update: {
-      name: email.split("@")[0],
-    },
+    update: name ? { name } : {},
     create: {
       email,
-      name: email.split("@")[0],
+      name: name ?? email.split("@")[0],
       profile: {
         create: {
           timezone: "Asia/Calcutta",

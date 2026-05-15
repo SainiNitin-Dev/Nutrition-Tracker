@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, KeyRound, LockKeyhole, Mail, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  KeyRound,
+  LockKeyhole,
+  Mail,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import { signInWithPasswordAction, signUpWithPasswordAction } from "./actions";
 
 type LoginPageProps = {
@@ -64,6 +72,23 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           )}
 
           <form className="mt-6 grid gap-4">
+            <label className="grid gap-2 text-sm font-medium text-slate-700">
+              Name
+              <span className="relative">
+                <UserRound
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                  aria-hidden
+                />
+                <input
+                  className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  maxLength={80}
+                  name="name"
+                  placeholder="Used when creating an account"
+                />
+              </span>
+            </label>
+
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Email address
               <span className="relative">
@@ -133,6 +158,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 function errorMessage(error: string) {
   const messages: Record<string, string> = {
     "invalid-email": "Enter a valid email address.",
+    "invalid-name": "Name must be 80 characters or fewer.",
     "invalid-password": "Password must be at least 6 characters.",
     "invalid-login": "Email or password is incorrect.",
     signup: "Could not create account. Check if the email already exists or if password signups are enabled in Supabase.",

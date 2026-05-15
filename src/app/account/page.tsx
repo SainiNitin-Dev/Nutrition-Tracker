@@ -1,11 +1,20 @@
 import Link from "next/link";
-import { ArrowLeft, LogOut, Target, UserRound } from "lucide-react";
+import { ArrowLeft, LogOut, Save, Target, UserRound } from "lucide-react";
 import { getCurrentAppUserWithActiveGoal } from "@/lib/auth/current-user";
 import { signOutAction } from "@/app/login/actions";
+import { updateNameAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function AccountPage() {
+type AccountPageProps = {
+  searchParams: Promise<{
+    updated?: string;
+    error?: string;
+  }>;
+};
+
+export default async function AccountPage({ searchParams }: AccountPageProps) {
+  const params = await searchParams;
   const user = await getCurrentAppUserWithActiveGoal();
 
   return (
@@ -27,6 +36,17 @@ export default async function AccountPage() {
           </div>
         </header>
 
+        {params.updated && (
+          <div className="rounded-3xl border border-emerald-100 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800 shadow-sm">
+            Name updated.
+          </div>
+        )}
+        {params.error && (
+          <div className="rounded-3xl border border-rose-100 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-800 shadow-sm">
+            Name must be between 2 and 80 characters.
+          </div>
+        )}
+
         <section className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
           <div className="flex items-start gap-4">
             <div className="grid size-14 place-items-center rounded-2xl bg-blue-50 text-blue-600">
@@ -43,21 +63,41 @@ export default async function AccountPage() {
           </div>
 
           {user ? (
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Link
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5"
-                href="/onboarding"
-              >
-                <Target size={16} aria-hidden />
-                {user.goals.length > 0 ? "Edit targets" : "Complete setup"}
-              </Link>
-              <form action={signOutAction}>
-                <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                  <LogOut size={16} aria-hidden />
-                  Sign out
+            <>
+              <form action={updateNameAction} className="mt-6 grid gap-3">
+                <label className="grid gap-2 text-sm font-medium text-slate-700">
+                  Display name
+                  <input
+                    className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    defaultValue={user.name ?? ""}
+                    maxLength={80}
+                    name="name"
+                    placeholder="Your name"
+                    required
+                  />
+                </label>
+                <button className="inline-flex h-11 w-fit items-center gap-2 rounded-full bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700">
+                  <Save size={16} aria-hidden />
+                  Save name
                 </button>
               </form>
-            </div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                <Link
+                  className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5"
+                  href="/onboarding"
+                >
+                  <Target size={16} aria-hidden />
+                  {user.goals.length > 0 ? "Edit targets" : "Complete setup"}
+                </Link>
+                <form action={signOutAction}>
+                  <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                    <LogOut size={16} aria-hidden />
+                    Sign out
+                  </button>
+                </form>
+              </div>
+            </>
           ) : (
             <Link
               className="mt-6 inline-flex h-11 items-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white"
