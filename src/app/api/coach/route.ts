@@ -54,6 +54,9 @@ export async function POST(request: Request) {
   const mealRequest = latestUserMessage
     ? extractSimpleMealRequest(latestUserMessage.content)
     : null;
+  const foodReportRequest = latestUserMessage
+    ? extractFoodReportRequest(latestUserMessage.content)
+    : null;
   const supplementRequest = latestUserMessage
     ? extractSupplementRequest(latestUserMessage.content)
     : null;
@@ -102,6 +105,19 @@ export async function POST(request: Request) {
 
     return new Response(
       `Added ${result.title} as ${result.mealType}. I estimated ${result.calories} kcal with ${result.protein}g protein. You can refine the numbers on the meal page.`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
+
+  if (foodReportRequest) {
+    const result = await createCoachMeal(foodReportRequest);
+
+    return new Response(
+      `Logged ${result.title} as ${result.mealType}. I estimated ${result.calories} kcal with ${result.protein}g protein, ${result.carbs}g carbs, and ${result.fat}g fat. You can refine it on the Meals page if needed.`,
       {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
@@ -478,6 +494,63 @@ function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
   };
 }
 
+function extractFoodReportRequest(text: string): SimpleMealRequest | null {
+  const normalized = text.trim().toLowerCase();
+
+  if (!/\b(had|ate|eaten|consumed|drank)\b/.test(normalized)) {
+    return null;
+  }
+
+  if (extractWaterAmountMl(text) && !hasFoodSignal(normalized)) {
+    return null;
+  }
+
+  if (!hasFoodSignal(normalized)) {
+    return null;
+  }
+
+  return {
+    mealType: inferMealTypeFromCurrentTime(),
+    text: cleanFoodReportText(text),
+  };
+}
+
+function hasFoodSignal(normalized: string) {
+  return (
+    /\b(oats?|milk|shake|peanut|butter|sugar|rice|chicken|egg|eggs|whey|banana|roti|bread|paneer|tofu|yogurt|yoghurt|dal|beans|salad|pasta|potato)\b/.test(
+      normalized,
+    ) || /\b\d+(?:\.\d+)?\s*(g|gram|grams|kg|ml|cup|cups|scoop|scoops)\b/.test(normalized)
+  );
+}
+
+function cleanFoodReportText(value: string) {
+  const cleaned = value
+    .replace(/\byes\b/gi, "")
+    .replace(/\bi\s+(have\s+)?(had|ate|eaten|consumed|drank)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned || value.trim();
+}
+
+function inferMealTypeFromCurrentTime(): SimpleMealRequest["mealType"] {
+  const hour = new Date().getHours();
+
+  if (hour < 11) {
+    return "breakfast";
+  }
+
+  if (hour < 16) {
+    return "lunch";
+  }
+
+  if (hour < 19) {
+    return "snack";
+  }
+
+  return "dinner";
+}
+
 function normalizeLookup(value: string) {
   return value
     .toLowerCase()
@@ -542,6 +615,12 @@ function extractSupplementRequest(
 
 function estimateNutritionFromText(text: string) {
   const normalized = text.toLowerCase();
+  const ingredientEstimate = estimateKnownIngredients(normalized);
+
+  if (ingredientEstimate) {
+    return ingredientEstimate;
+  }
+
   const isProteinHeavy = /\b(chicken|turkey|salmon|fish|paneer|tofu|egg|whey|beef)\b/.test(
     normalized,
   );
@@ -560,6 +639,105 @@ function estimateNutritionFromText(text: string) {
     fiber: 7,
     sodium: 520,
   };
+}
+
+function estimateKnownIngredients(normalized: string) {
+  const totals = {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    fiber: 0,
+    sodium: 0,
+  };
+  let matched = false;
+
+  matched = addKnownIngredient(
+    totals,
+    amountForIngredient(normalized, "oats?"),
+    { calories: 389, protein: 16.9, carbs: 66.3, fat: 6.9, fiber: 10.6, sodium: 2 },
+  ) || matched;
+  matched = addKnownIngredient(
+    totals,
+    amountForIngredient(normalized, "(?:buffalo|buffallo)\\s+milk"),
+    { calories: 97, protein: 3.8, carbs: 5.2, fat: 6.9, fiber: 0, sodium: 52 },
+  ) || matched;
+
+  if (!/\b(buffalo|buffallo)\s+milk\b/.test(normalized)) {
+    matched = addKnownIngredient(
+      totals,
+      amountForIngredient(normalized, "milk"),
+      { calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3, fiber: 0, sodium: 43 },
+    ) || matched;
+  }
+
+  matched = addKnownIngredient(
+    totals,
+    amountForIngredient(normalized, "peanut\\s+butter"),
+    { calories: 588, protein: 25, carbs: 20, fat: 50, fiber: 6, sodium: 460 },
+  ) || matched;
+  matched = addKnownIngredient(
+    totals,
+    amountForIngredient(normalized, "sugar"),
+    { calories: 400, protein: 0, carbs: 100, fat: 0, fiber: 0, sodium: 0 },
+  ) || matched;
+
+  if (!matched) {
+    return null;
+  }
+
+  return {
+    calories: Math.round(totals.calories),
+    protein: Math.round(totals.protein),
+    carbs: Math.round(totals.carbs),
+    fat: Math.round(totals.fat),
+    fiber: Math.round(totals.fiber),
+    sodium: Math.round(totals.sodium),
+  };
+}
+
+function amountForIngredient(normalized: string, ingredientPattern: string) {
+  const before = normalized.match(
+    new RegExp(`(\\d+(?:\\.\\d+)?)\\s*(?:g|gram|grams|ml)\\s+${ingredientPattern}\\b`),
+  );
+  const after = normalized.match(
+    new RegExp(`\\b${ingredientPattern}\\b\\s+(\\d+(?:\\.\\d+)?)\\s*(?:g|gram|grams|ml)`),
+  );
+
+  return Number(before?.[1] ?? after?.[1] ?? 0);
+}
+
+function addKnownIngredient(
+  totals: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    sodium: number;
+  },
+  amount: number,
+  per100g: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    sodium: number;
+  },
+) {
+  if (!amount) {
+    return false;
+  }
+
+  totals.calories += (per100g.calories * amount) / 100;
+  totals.protein += (per100g.protein * amount) / 100;
+  totals.carbs += (per100g.carbs * amount) / 100;
+  totals.fat += (per100g.fat * amount) / 100;
+  totals.fiber += (per100g.fiber * amount) / 100;
+  totals.sodium += (per100g.sodium * amount) / 100;
+
+  return true;
 }
 
 function titleFromFoodText(text: string) {

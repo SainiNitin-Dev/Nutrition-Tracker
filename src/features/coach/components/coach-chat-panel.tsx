@@ -67,6 +67,8 @@ export function CoachChatPanel({ insights }: CoachChatPanelProps) {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let assistantContent = "";
+
       while (true) {
         const { done, value } = await reader.read();
 
@@ -75,10 +77,25 @@ export function CoachChatPanel({ insights }: CoachChatPanelProps) {
         }
 
         const textChunk = decoder.decode(value, { stream: true });
+        assistantContent += textChunk;
         setMessages((current) =>
           current.map((message) =>
             message.id === assistantMessage.id
               ? { ...message, content: message.content + textChunk }
+              : message,
+          ),
+        );
+      }
+
+      if (!assistantContent.trim()) {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantMessage.id
+              ? {
+                  ...message,
+                  content:
+                    "I heard you, but I could not turn that into a reliable update. Try naming the food and meal, like: log oats shake as breakfast.",
+                }
               : message,
           ),
         );
