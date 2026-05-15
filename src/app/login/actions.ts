@@ -52,7 +52,7 @@ export async function signUpWithPasswordAction(formData: FormData) {
   });
 
   if (error) {
-    redirect("/login?error=signup");
+    redirect("/login?mode=signup&error=signup");
   }
 
   await ensureAppUser(email, name);
@@ -70,6 +70,10 @@ function readName(formData: FormData, email: string) {
 
   if (name.length > 80) {
     redirect("/login?error=invalid-name");
+  }
+
+  if (name.length < 2) {
+    redirect("/login?mode=signup&error=invalid-name");
   }
 
   return name || email.split("@")[0];

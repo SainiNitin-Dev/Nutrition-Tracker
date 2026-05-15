@@ -13,6 +13,7 @@ import { signInWithPasswordAction, signUpWithPasswordAction } from "./actions";
 
 type LoginPageProps = {
   searchParams: Promise<{
+    mode?: string;
     signedOut?: string;
     error?: string;
   }>;
@@ -20,6 +21,7 @@ type LoginPageProps = {
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
+  const isSignup = params.mode === "signup";
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(219,234,254,0.9),_transparent_30%),linear-gradient(135deg,_#fbfcff_0%,_#f5f7fb_48%,_#eef5ff_100%)] px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
@@ -56,9 +58,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className="grid size-14 place-items-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-300">
             <LockKeyhole size={22} aria-hidden />
           </div>
-          <h2 className="mt-6 text-3xl font-semibold tracking-tight">Sign in</h2>
+          <h2 className="mt-6 text-3xl font-semibold tracking-tight">
+            {isSignup ? "Create account" : "Sign in"}
+          </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Use email and password. No email redirect setup needed.
+            {isSignup
+              ? "Set up your profile with a name, email, and password."
+              : "Welcome back. Use your email and password to continue."}
           </p>
 
           {params.signedOut && (
@@ -72,24 +78,49 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           )}
 
-          <form className="mt-6 grid gap-4">
-            <label className="grid gap-2 text-sm font-medium text-slate-700">
-              Name
-              <span className="relative">
-                <UserRound
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  size={18}
-                  aria-hidden
-                />
-                <input
-                  className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-                  maxLength={80}
-                  name="name"
-                  placeholder="Used when creating an account"
-                />
-              </span>
-            </label>
+          <div className="mt-6 grid grid-cols-2 rounded-full bg-slate-100 p-1">
+            <Link
+              className={`rounded-full px-4 py-2 text-center text-sm font-semibold transition ${
+                !isSignup
+                  ? "bg-white text-slate-950 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+              href="/login"
+            >
+              Sign in
+            </Link>
+            <Link
+              className={`rounded-full px-4 py-2 text-center text-sm font-semibold transition ${
+                isSignup
+                  ? "bg-white text-slate-950 shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+              href="/login?mode=signup"
+            >
+              Sign up
+            </Link>
+          </div>
 
+          <form action={isSignup ? signUpWithPasswordAction : signInWithPasswordAction} className="mt-6 grid gap-4">
+            {isSignup && (
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Name
+                <span className="relative">
+                  <UserRound
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={18}
+                    aria-hidden
+                  />
+                  <input
+                    className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    maxLength={80}
+                    name="name"
+                    placeholder="Your name"
+                    required
+                  />
+                </span>
+              </label>
+            )}
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Email address
               <span className="relative">
@@ -127,27 +158,27 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </span>
             </label>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <PendingSubmitButton
-                className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
-                formAction={signInWithPasswordAction}
-                pendingLabel="Signing in..."
-              >
-                Sign in
-                <ArrowRight size={17} aria-hidden />
-              </PendingSubmitButton>
-              <PendingSubmitButton
-                className="inline-flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-70"
-                formAction={signUpWithPasswordAction}
-                pendingLabel="Creating..."
-              >
-                Create account
-              </PendingSubmitButton>
-            </div>
+            <PendingSubmitButton
+              className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
+              pendingLabel={isSignup ? "Creating..." : "Signing in..."}
+            >
+              {isSignup ? "Create account" : "Sign in"}
+              <ArrowRight size={17} aria-hidden />
+            </PendingSubmitButton>
           </form>
 
+          <p className="mt-5 text-sm text-slate-500">
+            {isSignup ? "Already have an account?" : "New to Nourish AI?"}{" "}
+            <Link
+              className="font-semibold text-blue-700"
+              href={isSignup ? "/login" : "/login?mode=signup"}
+            >
+              {isSignup ? "Sign in" : "Create one"}
+            </Link>
+          </p>
+
           <Link
-            className="mt-5 inline-flex text-sm font-semibold text-blue-700"
+            className="mt-3 inline-flex text-sm font-semibold text-blue-700"
             href="/"
           >
             Continue to demo dashboard
