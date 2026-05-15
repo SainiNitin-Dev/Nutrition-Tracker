@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   Check,
-  ChevronDown,
   Clock3,
   MoreHorizontal,
   Plus,
@@ -94,10 +93,6 @@ function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
         >
           Account
         </Link>
-        <span className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-500 shadow-sm">
-          This week
-          <ChevronDown size={16} aria-hidden />
-        </span>
         <Link
           className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-medium text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
           href="/meals"

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { MobileTabBar } from "@/components/navigation/mobile-tab-bar";
+import { AppShell } from "@/components/navigation/app-shell";
 import { AppBusyIndicator } from "@/components/ui/app-busy-indicator";
 import "./globals.css";
 
@@ -59,8 +59,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <AppBusyIndicator />
-        <div className="min-h-full pb-28 lg:pb-0">{children}</div>
-        <MobileTabBar />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
