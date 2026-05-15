@@ -6,6 +6,7 @@ import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import {
   deleteMealSchema,
+  editMealSchema,
   manualMealSchema,
   mealTemplateActionSchema,
   saveMealTemplateSchema,
@@ -16,6 +17,7 @@ import {
   logMealTemplateForCurrentUser,
   saveMealAsTemplateForCurrentUser,
   toMealType,
+  updateMealForCurrentUser,
 } from "./service";
 
 export async function addManualMealAction(formData: FormData) {
@@ -61,6 +63,34 @@ export async function deleteMealAction(formData: FormData) {
   });
 
   redirect("/meals?deleted=1");
+}
+
+export async function updateMealAction(formData: FormData) {
+  const parsed = editMealSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    redirect("/meals?error=invalid-meal");
+  }
+
+  await updateMealForCurrentUser({
+    mealId: parsed.data.mealId,
+    itemId: parsed.data.itemId,
+    mealType: toMealType(parsed.data.mealType),
+    title: parsed.data.title,
+    itemName: parsed.data.itemName,
+    quantity: parsed.data.quantity,
+    unit: parsed.data.unit,
+    calories: parsed.data.calories,
+    protein: parsed.data.protein,
+    carbs: parsed.data.carbs,
+    fat: parsed.data.fat,
+    fiber: parsed.data.fiber,
+    sugar: parsed.data.sugar,
+    sodium: parsed.data.sodium,
+    source: LogSource.manual,
+  });
+
+  redirect("/meals?updated=1");
 }
 
 export async function saveMealTemplateAction(formData: FormData) {

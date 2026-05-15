@@ -55,6 +55,13 @@ export async function getMealTrackerData() {
         name: item.name,
         quantity: Number(item.quantity),
         unit: item.unit,
+        calories: Number(item.calories),
+        protein: Number(item.protein),
+        carbs: Number(item.carbs),
+        fat: Number(item.fat),
+        fiber: Number(item.fiber ?? 0),
+        sugar: Number(item.sugar ?? 0),
+        sodium: Number(item.sodium ?? 0),
       })),
       totals,
     };

@@ -19,6 +19,11 @@ export const deleteMealSchema = z.object({
   mealId: z.string().min(1),
 });
 
+export const editMealSchema = manualMealSchema.extend({
+  mealId: z.string().min(1),
+  itemId: z.string().min(1),
+});
+
 export const saveMealTemplateSchema = z.object({
   mealId: z.string().min(1),
 });
@@ -28,3 +33,4 @@ export const mealTemplateActionSchema = z.object({
 });
 
 export type ManualMealInput = z.infer<typeof manualMealSchema>;
+export type EditMealInput = z.infer<typeof editMealSchema>;

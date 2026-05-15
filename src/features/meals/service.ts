@@ -18,6 +18,11 @@ export type CreateMealInput = {
   source: LogSource;
 };
 
+export type UpdateMealInput = CreateMealInput & {
+  mealId: string;
+  itemId: string;
+};
+
 export async function createMealForDemoUser(input: CreateMealInput) {
   const user = await getCurrentOrDemoAppUser();
 
@@ -47,6 +52,56 @@ export async function createMealForDemoUser(input: CreateMealInput) {
     include: {
       items: true,
     },
+  });
+}
+
+export async function updateMealForCurrentUser(input: UpdateMealInput) {
+  const user = await getCurrentOrDemoAppUser();
+
+  return prisma.$transaction(async (transaction) => {
+    const meal = await transaction.meal.findUnique({
+      where: {
+        id: input.mealId,
+        userId: user.id,
+      },
+      include: { items: true },
+    });
+
+    if (!meal || !meal.items.some((item) => item.id === input.itemId)) {
+      throw new Error("Meal not found");
+    }
+
+    await transaction.meal.update({
+      where: {
+        id: input.mealId,
+        userId: user.id,
+      },
+      data: {
+        mealType: input.mealType,
+        title: input.title,
+        source: input.source,
+      },
+    });
+
+    return transaction.mealItem.update({
+      where: {
+        id: input.itemId,
+        mealId: input.mealId,
+      },
+      data: {
+        name: input.itemName,
+        quantity: input.quantity,
+        unit: input.unit,
+        calories: input.calories,
+        protein: input.protein,
+        carbs: input.carbs,
+        fat: input.fat,
+        fiber: input.fiber ?? 0,
+        sugar: input.sugar ?? 0,
+        sodium: input.sodium ?? 0,
+        confidence: input.source === LogSource.manual ? 1 : 0.72,
+      },
+    });
   });
 }
 
