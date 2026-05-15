@@ -55,6 +55,24 @@ export async function requireCurrentAppUser() {
   return user;
 }
 
+export async function getCurrentAppUserWithActiveGoal() {
+  const user = await getCurrentAppUser();
+
+  if (!user) {
+    return null;
+  }
+
+  return prisma.user.findUnique({
+    where: { id: user.id },
+    include: {
+      goals: {
+        where: { isActive: true },
+        take: 1,
+      },
+    },
+  });
+}
+
 export async function getCurrentOrDemoAppUser() {
   const user = await getCurrentAppUser();
 

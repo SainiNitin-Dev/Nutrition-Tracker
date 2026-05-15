@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft, LogOut, UserRound } from "lucide-react";
-import { getCurrentAppUser } from "@/lib/auth/current-user";
+import { ArrowLeft, LogOut, Target, UserRound } from "lucide-react";
+import { getCurrentAppUserWithActiveGoal } from "@/lib/auth/current-user";
 import { signOutAction } from "@/app/login/actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
-  const user = await getCurrentAppUser();
+  const user = await getCurrentAppUserWithActiveGoal();
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(219,234,254,0.9),_transparent_30%),linear-gradient(135deg,_#fbfcff_0%,_#f5f7fb_48%,_#eef5ff_100%)] px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
@@ -43,12 +43,21 @@ export default async function AccountPage() {
           </div>
 
           {user ? (
-            <form action={signOutAction} className="mt-6">
-              <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                <LogOut size={16} aria-hidden />
-                Sign out
-              </button>
-            </form>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5"
+                href="/onboarding"
+              >
+                <Target size={16} aria-hidden />
+                {user.goals.length > 0 ? "Edit targets" : "Complete setup"}
+              </Link>
+              <form action={signOutAction}>
+                <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                  <LogOut size={16} aria-hidden />
+                  Sign out
+                </button>
+              </form>
+            </div>
           ) : (
             <Link
               className="mt-6 inline-flex h-11 items-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white"
