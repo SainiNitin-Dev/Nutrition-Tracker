@@ -56,11 +56,29 @@ body {
   }
 }
 
+@keyframes app-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  45% {
+    transform: translateX(-20%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .animate-rise-in {
-  animation: rise-in 640ms ease both;
+  animation: rise-in 180ms ease-out both;
 }
 
 .water-fill {
   transform-origin: bottom;
-  animation: water-fill 1400ms ease-in-out both;
+  animation: water-fill 420ms ease-in-out both;
+}
+
+.animate-app-progress {
+  animation: app-progress 1150ms ease-in-out infinite;
 }

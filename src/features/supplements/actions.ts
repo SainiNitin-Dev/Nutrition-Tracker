@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { SupplementLogStatus } from "@/generated/prisma/client";
 import {
@@ -24,8 +23,6 @@ export async function addSupplementAction(formData: FormData) {
 
   await createSupplementForCurrentUser(parsed.data);
 
-  revalidatePath("/");
-  revalidatePath("/supplements");
   redirect("/supplements?added=1");
 }
 
@@ -38,8 +35,6 @@ export async function markSupplementTakenAction(formData: FormData) {
 
   await logSupplementForDemoUser(parsed.data.supplementId, SupplementLogStatus.taken);
 
-  revalidatePath("/");
-  revalidatePath("/supplements");
   redirect("/supplements?taken=1");
 }
 
@@ -52,8 +47,6 @@ export async function markSupplementSkippedAction(formData: FormData) {
 
   await logSupplementForDemoUser(parsed.data.supplementId, SupplementLogStatus.skipped);
 
-  revalidatePath("/");
-  revalidatePath("/supplements");
   redirect("/supplements?skipped=1");
 }
 
@@ -66,8 +59,6 @@ export async function deleteSupplementAction(formData: FormData) {
 
   await deactivateSupplementForCurrentUser(parsed.data.supplementId);
 
-  revalidatePath("/");
-  revalidatePath("/supplements");
   redirect("/supplements?deleted=1");
 }
 
@@ -83,7 +74,5 @@ export async function updateSupplementScheduleAction(formData: FormData) {
     parsed.data.timeOfDay,
   );
 
-  revalidatePath("/");
-  revalidatePath("/supplements");
   redirect("/supplements?scheduleUpdated=1");
 }

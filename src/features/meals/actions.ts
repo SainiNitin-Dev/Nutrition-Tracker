@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { LogSource } from "@/generated/prisma/client";
 import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
@@ -42,8 +41,6 @@ export async function addManualMealAction(formData: FormData) {
     source: LogSource.manual,
   });
 
-  revalidatePath("/");
-  revalidatePath("/meals");
   redirect("/meals?created=1");
 }
 
@@ -63,8 +60,6 @@ export async function deleteMealAction(formData: FormData) {
     },
   });
 
-  revalidatePath("/");
-  revalidatePath("/meals");
   redirect("/meals?deleted=1");
 }
 
@@ -77,7 +72,6 @@ export async function saveMealTemplateAction(formData: FormData) {
 
   await saveMealAsTemplateForCurrentUser(parsed.data.mealId);
 
-  revalidatePath("/meals");
   redirect("/meals?saved=1");
 }
 
@@ -90,8 +84,6 @@ export async function logMealTemplateAction(formData: FormData) {
 
   await logMealTemplateForCurrentUser(parsed.data.templateId);
 
-  revalidatePath("/");
-  revalidatePath("/meals");
   redirect("/meals?logged=1");
 }
 
@@ -104,6 +96,5 @@ export async function deleteMealTemplateAction(formData: FormData) {
 
   await deleteMealTemplateForCurrentUser(parsed.data.templateId);
 
-  revalidatePath("/meals");
   redirect("/meals?templateDeleted=1");
 }
