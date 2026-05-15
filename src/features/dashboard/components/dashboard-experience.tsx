@@ -38,7 +38,11 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
   return (
     <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(219,234,254,0.9),_transparent_30%),linear-gradient(135deg,_#fbfcff_0%,_#f5f7fb_48%,_#eef5ff_100%)] px-4 py-4 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
-        <TopBar name={snapshot.userName} dateLabel={snapshot.dateLabel} />
+        <TopBar
+          greeting={snapshot.greeting}
+          name={snapshot.userName}
+          dateLabel={snapshot.dateLabel}
+        />
 
         <div className="grid gap-5 lg:grid-cols-[84px_minmax(0,1fr)_360px]">
           <Sidebar />
@@ -71,7 +75,15 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
   );
 }
 
-function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
+function TopBar({
+  greeting,
+  name,
+  dateLabel,
+}: {
+  greeting: string;
+  name: string;
+  dateLabel: string;
+}) {
   return (
     <header className="animate-rise-in flex flex-col gap-4 rounded-[28px] border border-white/80 bg-white/75 p-4 shadow-[0_24px_70px_rgba(30,41,59,0.08)] backdrop-blur md:flex-row md:items-center md:justify-between">
       <div className="flex items-center gap-3">
@@ -81,7 +93,7 @@ function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
         <div>
           <p className="text-sm text-slate-500">{dateLabel}</p>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-            Good afternoon, {name}
+            {greeting}, {name}
           </h1>
         </div>
       </div>

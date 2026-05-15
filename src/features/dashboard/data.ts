@@ -52,6 +52,7 @@ export type NutritionSignal = {
 export type DashboardSnapshot = {
   userName: string;
   dateLabel: string;
+  greeting: string;
   calories: {
     current: number;
     goal: number;
@@ -74,6 +75,7 @@ export type DashboardSnapshot = {
 export const dashboardSnapshot: DashboardSnapshot = {
   userName: "Alex",
   dateLabel: "Friday, May 15",
+  greeting: "Good afternoon",
   calories: {
     current: 1680,
     goal: 2300,

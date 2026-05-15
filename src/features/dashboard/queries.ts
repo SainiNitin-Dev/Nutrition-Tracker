@@ -135,6 +135,7 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
     ...dashboardSnapshot,
     userName: user.name ?? "Alex",
     dateLabel: formatTodayLabel(),
+    greeting: formatGreeting(),
     calories: {
       current: Math.round(totals.calories),
       goal: calorieGoal,
@@ -327,7 +328,36 @@ function formatTodayLabel() {
     weekday: "long",
     month: "long",
     day: "numeric",
+    timeZone: "Asia/Calcutta",
   }).format(new Date());
+}
+
+function formatGreeting() {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: "Asia/Calcutta",
+    }).format(new Date()),
+  );
+
+  if (hour < 5) {
+    return "Still up";
+  }
+
+  if (hour < 12) {
+    return "Good morning";
+  }
+
+  if (hour < 17) {
+    return "Good afternoon";
+  }
+
+  if (hour < 22) {
+    return "Good evening";
+  }
+
+  return "Good night";
 }
 
 function formatMealType(mealType: string) {
