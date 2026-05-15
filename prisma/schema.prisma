@@ -1,0 +1,348 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ActivityLevel {
+  sedentary
+  lightly_active
+  moderately_active
+  very_active
+  athlete
+}
+
+enum GoalType {
+  fat_loss
+  muscle_gain
+  maintenance
+  performance
+  wellness
+}
+
+enum MealType {
+  breakfast
+  lunch
+  dinner
+  snack
+}
+
+enum LogSource {
+  manual
+  coach
+  ai_text
+  ai_image
+  import
+}
+
+enum SupplementLogStatus {
+  taken
+  skipped
+  planned
+}
+
+enum CoachRole {
+  user
+  assistant
+  tool
+  system
+}
+
+enum CoachMemoryType {
+  preference
+  pattern
+  constraint
+  summary
+}
+
+enum AiActionStatus {
+  proposed
+  applied
+  rejected
+  failed
+}
+
+model User {
+  id              String              @id @default(cuid())
+  email           String              @unique
+  name            String?
+  imageUrl        String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  profile         Profile?
+  goals           Goal[]
+  foods           Food[]
+  meals           Meal[]
+  hydrationLogs   HydrationLog[]
+  supplements     Supplement[]
+  supplementLogs  SupplementLog[]
+  workouts        Workout[]
+  bodyMetrics     BodyMetric[]
+  conversations   CoachConversation[]
+  memories        CoachMemory[]
+  aiActionLogs    AiActionLog[]
+
+  @@index([email])
+}
+
+model Profile {
+  id                String         @id @default(cuid())
+  userId            String         @unique
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sex               String?
+  birthDate         DateTime?
+  heightCm          Decimal?       @db.Decimal(5, 2)
+  weightKg          Decimal?       @db.Decimal(5, 2)
+  activityLevel     ActivityLevel?
+  timezone          String         @default("UTC")
+  dietaryPreference String?
+  allergies         String[]       @default([])
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Goal {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type           GoalType
+  targetCalories Int
+  proteinGrams   Decimal   @db.Decimal(7, 2)
+  carbsGrams     Decimal   @db.Decimal(7, 2)
+  fatGrams       Decimal   @db.Decimal(7, 2)
+  fiberGrams     Decimal?  @db.Decimal(7, 2)
+  sugarGrams     Decimal?  @db.Decimal(7, 2)
+  sodiumMg       Decimal?  @db.Decimal(8, 2)
+  waterMl        Int
+  startDate      DateTime
+  targetDate     DateTime?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId, isActive])
+}
+
+model Food {
+  id              String         @id @default(cuid())
+  userId          String?
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name            String
+  brand           String?
+  servingSize     Decimal        @db.Decimal(8, 2)
+  servingUnit     String
+  source          LogSource      @default(manual)
+  verified        Boolean        @default(false)
+  nutrientProfile FoodNutrient?
+  mealItems       MealItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([name])
+  @@index([userId])
+}
+
+model FoodNutrient {
+  id         String   @id @default(cuid())
+  foodId     String   @unique
+  food       Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  calories   Decimal  @db.Decimal(8, 2)
+  protein    Decimal  @db.Decimal(8, 2)
+  carbs      Decimal  @db.Decimal(8, 2)
+  fat        Decimal  @db.Decimal(8, 2)
+  fiber      Decimal? @db.Decimal(8, 2)
+  sugar      Decimal? @db.Decimal(8, 2)
+  sodium     Decimal? @db.Decimal(8, 2)
+  potassium  Decimal? @db.Decimal(8, 2)
+  calcium    Decimal? @db.Decimal(8, 2)
+  iron       Decimal? @db.Decimal(8, 2)
+  vitaminD   Decimal? @db.Decimal(8, 2)
+  vitaminB12 Decimal? @db.Decimal(8, 2)
+  magnesium  Decimal? @db.Decimal(8, 2)
+  zinc       Decimal? @db.Decimal(8, 2)
+}
+
+model Meal {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  mealType  MealType
+  title     String?
+  notes     String?
+  source    LogSource  @default(manual)
+  items     MealItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, mealType, date])
+}
+
+model MealItem {
+  id         String   @id @default(cuid())
+  mealId     String
+  meal       Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  foodId     String?
+  food       Food?    @relation(fields: [foodId], references: [id], onDelete: SetNull)
+  name       String
+  quantity   Decimal  @db.Decimal(8, 2)
+  unit       String
+  calories   Decimal  @db.Decimal(8, 2)
+  protein    Decimal  @db.Decimal(8, 2)
+  carbs      Decimal  @db.Decimal(8, 2)
+  fat        Decimal  @db.Decimal(8, 2)
+  fiber      Decimal? @db.Decimal(8, 2)
+  sugar      Decimal? @db.Decimal(8, 2)
+  sodium     Decimal? @db.Decimal(8, 2)
+  confidence Decimal? @db.Decimal(4, 3)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([mealId])
+}
+
+model HydrationLog {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountMl  Int
+  loggedAt  DateTime  @default(now())
+  source    LogSource @default(manual)
+  createdAt DateTime  @default(now())
+
+  @@index([userId, loggedAt])
+}
+
+model Supplement {
+  id           String               @id @default(cuid())
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  dosageAmount Decimal              @db.Decimal(8, 2)
+  dosageUnit   String
+  instructions String?
+  purpose      String?
+  active       Boolean              @default(true)
+  schedules    SupplementSchedule[]
+  logs         SupplementLog[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([userId, active])
+}
+
+model SupplementSchedule {
+  id              String     @id @default(cuid())
+  supplementId    String
+  supplement      Supplement @relation(fields: [supplementId], references: [id], onDelete: Cascade)
+  timeOfDay       String
+  daysOfWeek      Int[]      @default([])
+  reminderEnabled Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model SupplementLog {
+  id           String              @id @default(cuid())
+  supplementId String
+  supplement   Supplement          @relation(fields: [supplementId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  takenAt      DateTime            @default(now())
+  amount       Decimal?            @db.Decimal(8, 2)
+  status       SupplementLogStatus @default(taken)
+  notes        String?
+  source       LogSource           @default(manual)
+  createdAt    DateTime            @default(now())
+
+  @@index([userId, takenAt])
+  @@index([supplementId, takenAt])
+}
+
+model Workout {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  startedAt       DateTime
+  durationMinutes Int?
+  caloriesBurned  Int?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId, startedAt])
+}
+
+model BodyMetric {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  measuredAt     DateTime @default(now())
+  weightKg       Decimal? @db.Decimal(5, 2)
+  bodyFatPercent Decimal? @db.Decimal(5, 2)
+  waistCm        Decimal? @db.Decimal(5, 2)
+  createdAt      DateTime @default(now())
+
+  @@index([userId, measuredAt])
+}
+
+model CoachConversation {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  messages  CoachMessage[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
+model CoachMessage {
+  id             String            @id @default(cuid())
+  conversationId String
+  conversation   CoachConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           CoachRole
+  content        String
+  metadataJson   Json?
+  actionLogs     AiActionLog[]
+  createdAt      DateTime          @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model CoachMemory {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        CoachMemoryType
+  content     String
+  importance  Int             @default(1)
+  metadataJson Json?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([userId, type])
+  @@index([userId, importance])
+}
+
+model AiActionLog {
+  id         String          @id @default(cuid())
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageId  String?
+  message    CoachMessage?   @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  actionType String
+  payloadJson Json
+  status     AiActionStatus
+  error       String?
+  createdAt  DateTime        @default(now())
+
+  @@index([userId, createdAt])
+  @@index([messageId])
+}

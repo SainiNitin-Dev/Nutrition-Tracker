@@ -1,6 +1,10 @@
 import { DashboardExperience } from "@/features/dashboard/components/dashboard-experience";
-import { dashboardSnapshot } from "@/features/dashboard/data";
+import { getTodayDashboardSnapshot } from "@/features/dashboard/queries";
 
-export default function Home() {
-  return <DashboardExperience snapshot={dashboardSnapshot} />;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const snapshot = await getTodayDashboardSnapshot();
+
+  return <DashboardExperience snapshot={snapshot} />;
 }

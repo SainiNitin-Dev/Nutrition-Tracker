@@ -1,13 +1,12 @@
 import {
-  ArrowRight,
   Check,
   ChevronDown,
   Clock3,
-  MessageCircle,
   MoreHorizontal,
   Plus,
   Sparkles,
 } from "lucide-react";
+import { CoachChatPanel } from "@/features/coach/components/coach-chat-panel";
 import { dashboardNav, nutritionSignals } from "../data";
 import type { DashboardSnapshot, Macro } from "../data";
 
@@ -57,7 +56,7 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
           </section>
 
           <aside className="grid content-start gap-5">
-            <CoachPanel insights={snapshot.insights} />
+            <CoachChatPanel insights={snapshot.insights} />
             <SignalsPanel />
             <QuickActions actions={snapshot.quickActions} />
           </aside>
@@ -407,40 +406,6 @@ function SupplementPanel({
           </article>
         ))}
       </div>
-    </section>
-  );
-}
-
-function CoachPanel({ insights }: { insights: string[] }) {
-  return (
-    <section className="animate-rise-in rounded-[32px] border border-slate-900 bg-slate-950 p-6 text-white shadow-[0_24px_70px_rgba(15,23,42,0.25)]">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-blue-200">AI coach</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
-            Context-aware guidance
-          </h2>
-        </div>
-        <div className="grid size-11 place-items-center rounded-2xl bg-white/10">
-          <MessageCircle size={20} aria-hidden />
-        </div>
-      </div>
-
-      <div className="mt-6 grid gap-3">
-        {insights.map((insight) => (
-          <p
-            className="rounded-3xl border border-white/10 bg-white/[0.06] p-4 text-sm leading-6 text-slate-200"
-            key={insight}
-          >
-            {insight}
-          </p>
-        ))}
-      </div>
-
-      <button className="mt-5 inline-flex h-12 w-full items-center justify-between rounded-full bg-white px-5 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5">
-        Ask about today
-        <ArrowRight size={17} aria-hidden />
-      </button>
     </section>
   );
 }
