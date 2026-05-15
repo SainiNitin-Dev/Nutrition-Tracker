@@ -58,7 +58,7 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
             <SupplementPanel supplements={snapshot.supplements} />
           </section>
 
-          <aside className="grid content-start gap-5">
+          <aside className="grid content-start gap-5" id="coach">
             <CoachChatPanel insights={snapshot.insights} />
             <SignalsPanel />
             <QuickActions actions={snapshot.quickActions} />
@@ -91,14 +91,21 @@ function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
         >
           Account
         </Link>
-        <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+        <button
+          className="inline-flex h-11 cursor-not-allowed items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-400 shadow-sm"
+          disabled
+          title="Weekly filters are coming soon"
+        >
           This week
           <ChevronDown size={16} aria-hidden />
         </button>
-        <button className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-medium text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800">
+        <Link
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-medium text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
+          href="/meals"
+        >
           <Plus size={16} aria-hidden />
           Quick log
-        </button>
+        </Link>
       </div>
     </header>
   );
@@ -167,8 +174,9 @@ function HeroPanel({
           </p>
         </div>
         <button
-          className="grid size-10 place-items-center rounded-full border border-slate-200 text-slate-500 transition hover:bg-slate-50"
-          title="More calorie options"
+          className="grid size-10 cursor-not-allowed place-items-center rounded-full border border-slate-200 text-slate-300"
+          disabled
+          title="More calorie options are coming soon"
         >
           <MoreHorizontal size={18} aria-hidden />
         </button>
@@ -502,9 +510,19 @@ function QuickActions({ actions }: { actions: DashboardSnapshot["quickActions"] 
                 <Icon className="text-slate-700" size={20} aria-hidden />
                 <span className="text-sm font-semibold text-slate-950">{action.label}</span>
               </Link>
+            ) : action.label === "Ask coach" ? (
+              <a
+                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                href="#coach"
+                key={action.label}
+              >
+                <Icon className="text-slate-700" size={20} aria-hidden />
+                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
+              </a>
             ) : (
               <button
-                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                className="flex min-h-24 cursor-not-allowed flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left text-slate-400"
+                disabled
                 key={action.label}
               >
                 <Icon className="text-slate-700" size={20} aria-hidden />

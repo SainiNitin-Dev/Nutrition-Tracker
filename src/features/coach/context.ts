@@ -1,4 +1,4 @@
-import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
+import { getCurrentOrDemoUserWhereUnique } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import { addNutrientTotals } from "@/lib/nutrition/math";
 import { demoUserEmail } from "@/lib/demo";
@@ -6,9 +6,9 @@ import { demoUserEmail } from "@/lib/demo";
 export const demoCoachUserEmail = demoUserEmail;
 
 export async function getCoachNutritionContext() {
-  const currentUser = await getCurrentOrDemoAppUser();
+  const userWhere = await getCurrentOrDemoUserWhereUnique();
   const user = await prisma.user.findUnique({
-    where: { id: currentUser.id },
+    where: userWhere,
     include: {
       goals: {
         where: { isActive: true },

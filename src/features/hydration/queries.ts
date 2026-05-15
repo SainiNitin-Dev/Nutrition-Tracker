@@ -1,10 +1,10 @@
-import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
+import { getCurrentOrDemoUserWhereUnique } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 
 export async function getHydrationTrackerData() {
-  const currentUser = await getCurrentOrDemoAppUser();
+  const userWhere = await getCurrentOrDemoUserWhereUnique();
   const user = await prisma.user.findUniqueOrThrow({
-    where: { id: currentUser.id },
+    where: userWhere,
     include: {
       goals: {
         where: { isActive: true },

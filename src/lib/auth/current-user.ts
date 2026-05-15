@@ -67,6 +67,20 @@ export async function getCurrentOrDemoAppUser() {
   });
 }
 
+export async function getCurrentOrDemoUserWhereUnique() {
+  if (!(await hasSupabaseAuthCookie())) {
+    return { email: demoUserEmail } as const;
+  }
+
+  const user = await getCurrentAppUser();
+
+  if (user) {
+    return { id: user.id } as const;
+  }
+
+  return { email: demoUserEmail } as const;
+}
+
 async function hasSupabaseAuthCookie() {
   const cookieStore = await cookies();
 
