@@ -1,5 +1,5 @@
 import { LogSource } from "@/generated/prisma/client";
-import { demoCoachUserEmail } from "@/features/coach/context";
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 
 export async function addHydrationLogForDemoUser(
@@ -12,8 +12,9 @@ export async function addHydrationLogForDemoUser(
     throw new Error("Water amount must be between 50ml and 3000ml.");
   }
 
+  const currentUser = await getCurrentOrDemoAppUser();
   const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
+    where: { id: currentUser.id },
     include: {
       goals: {
         where: { isActive: true },
@@ -57,10 +58,7 @@ export async function addHydrationLogForDemoUser(
 }
 
 export async function deleteHydrationLogForDemoUser(logId: string) {
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
-    select: { id: true },
-  });
+  const user = await getCurrentOrDemoAppUser();
 
   await prisma.hydrationLog.delete({
     where: {

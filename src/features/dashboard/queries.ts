@@ -1,13 +1,13 @@
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import { addNutrientTotals } from "@/lib/nutrition/math";
 import { dashboardSnapshot } from "./data";
 import type { DashboardSnapshot } from "./data";
 
-const demoUserEmail = "alex.demo@nourish.local";
-
 export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
+  const currentUser = await getCurrentOrDemoAppUser();
   const user = await prisma.user.findUnique({
-    where: { email: demoUserEmail },
+    where: { id: currentUser.id },
     include: {
       goals: {
         where: { isActive: true },

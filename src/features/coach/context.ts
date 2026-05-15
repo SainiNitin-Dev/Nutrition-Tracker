@@ -1,11 +1,14 @@
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import { addNutrientTotals } from "@/lib/nutrition/math";
+import { demoUserEmail } from "@/lib/demo";
 
-export const demoCoachUserEmail = "alex.demo@nourish.local";
+export const demoCoachUserEmail = demoUserEmail;
 
 export async function getCoachNutritionContext() {
+  const currentUser = await getCurrentOrDemoAppUser();
   const user = await prisma.user.findUnique({
-    where: { email: demoCoachUserEmail },
+    where: { id: currentUser.id },
     include: {
       goals: {
         where: { isActive: true },

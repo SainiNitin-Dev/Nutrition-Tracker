@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { LogSource } from "@/generated/prisma/client";
-import { demoCoachUserEmail } from "@/features/coach/context";
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 import { deleteMealSchema, manualMealSchema } from "./schemas";
 import { createMealForDemoUser, toMealType } from "./service";
@@ -43,10 +43,7 @@ export async function deleteMealAction(formData: FormData) {
     redirect("/meals?error=invalid-delete");
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
-    select: { id: true },
-  });
+  const user = await getCurrentOrDemoAppUser();
 
   await prisma.meal.delete({
     where: {

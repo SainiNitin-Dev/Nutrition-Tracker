@@ -17,7 +17,7 @@ type ChatMessage = {
 const starterPrompts = [
   "How am I doing today?",
   "I drank 500ml water",
-  "Add chicken rice bowl for lunch",
+  "Mark magnesium taken",
 ];
 
 export function CoachChatPanel({ insights }: CoachChatPanelProps) {
@@ -194,7 +194,7 @@ export function CoachChatPanel({ insights }: CoachChatPanelProps) {
       {!hasConversation && (
         <div className="mt-4 flex items-center gap-2 text-xs font-medium text-slate-400">
           <ArrowRight size={14} aria-hidden />
-          Try: “I drank 500ml water” or “Add chicken rice bowl for lunch”.
+          Try: “I drank 500ml water” or “Mark magnesium taken”.
         </div>
       )}
     </section>

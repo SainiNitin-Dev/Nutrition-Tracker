@@ -84,6 +84,12 @@ function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
+        <Link
+          className="inline-flex h-11 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+          href="/account"
+        >
+          Account
+        </Link>
         <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
           This week
           <ChevronDown size={16} aria-hidden />

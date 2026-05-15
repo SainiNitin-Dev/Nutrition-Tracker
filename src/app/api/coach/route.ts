@@ -2,17 +2,19 @@ import { streamText, stepCountIs, tool } from "ai";
 import { z } from "zod";
 import { getGroqChatModel } from "@/lib/ai/provider";
 import { prisma } from "@/lib/prisma/client";
-import { LogSource } from "@/generated/prisma/client";
-import {
-  demoCoachUserEmail,
-  getCoachNutritionContext,
-} from "@/features/coach/context";
+import { LogSource, SupplementLogStatus } from "@/generated/prisma/client";
+import { getCoachNutritionContext } from "@/features/coach/context";
 import { buildCoachSystemPrompt } from "@/features/coach/prompt";
 import { createMealForDemoUser, toMealType } from "@/features/meals/service";
 import {
   addHydrationLogForDemoUser,
   normalizeWaterAmount,
 } from "@/features/hydration/service";
+import {
+  findSupplementForDemoUserByName,
+  logSupplementForDemoUser,
+} from "@/features/supplements/service";
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 
 const coachMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -44,6 +46,9 @@ export async function POST(request: Request) {
   const mealRequest = latestUserMessage
     ? extractSimpleMealRequest(latestUserMessage.content)
     : null;
+  const supplementRequest = latestUserMessage
+    ? extractSupplementRequest(latestUserMessage.content)
+    : null;
 
   if (waterAmount) {
     const result = await addHydrationLog(waterAmount);
@@ -63,6 +68,33 @@ export async function POST(request: Request) {
 
     return new Response(
       `Added ${result.title} as ${result.mealType}. I estimated ${result.calories} kcal with ${result.protein}g protein. You can refine the numbers on the meal page.`,
+      {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      },
+    );
+  }
+
+  if (supplementRequest) {
+    const result = await logSupplementFromCoach(
+      supplementRequest.name,
+      supplementRequest.status,
+    );
+
+    if (!result) {
+      return new Response(
+        `I could not find "${supplementRequest.name}" in your active supplements. Try the supplement's saved name.`,
+        {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+          },
+        },
+      );
+    }
+
+    return new Response(
+      `${result.name} marked as ${supplementRequest.status}.`,
       {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
@@ -136,10 +168,66 @@ export async function POST(request: Request) {
           };
         },
       }),
+      markSupplement: tool({
+        description:
+          "Mark an active supplement as taken or skipped when the user clearly asks to update a supplement.",
+        inputSchema: z.object({
+          supplementName: z.string().min(2).max(80),
+          status: z.enum(["taken", "skipped"]),
+        }),
+        execute: async ({ supplementName, status }) => {
+          const result = await logSupplementFromCoach(
+            supplementName,
+            status as SupplementLogStatus,
+          );
+
+          return result
+            ? {
+                ok: true,
+                supplementId: result.id,
+                name: result.name,
+                status,
+              }
+            : {
+                ok: false,
+                error: "Supplement not found.",
+              };
+        },
+      }),
     },
   });
 
   return result.toTextStreamResponse();
+}
+
+async function logSupplementFromCoach(
+  supplementName: string,
+  status: SupplementLogStatus,
+) {
+  const supplement = await findSupplementForDemoUserByName(supplementName);
+
+  if (!supplement) {
+    return null;
+  }
+
+  await logSupplementForDemoUser(supplement.id, status);
+
+  const user = await getCurrentOrDemoAppUser();
+
+  await prisma.aiActionLog.create({
+    data: {
+      userId: user.id,
+      actionType: "markSupplement",
+      payloadJson: {
+        supplementId: supplement.id,
+        supplementName: supplement.name,
+        status,
+      },
+      status: "applied",
+    },
+  });
+
+  return supplement;
 }
 
 type SimpleMealRequest = {
@@ -173,10 +261,7 @@ async function createCoachMeal(request: SimpleMealRequest) {
     sodium: estimated.sodium ?? 0,
     source: LogSource.ai_text,
   });
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
-    select: { id: true },
-  });
+  const user = await getCurrentOrDemoAppUser();
 
   await prisma.aiActionLog.create({
     data: {
@@ -250,6 +335,50 @@ function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
   return {
     mealType: mealTypeMatch[1] as SimpleMealRequest["mealType"],
     text: withoutCommand,
+  };
+}
+
+function extractSupplementRequest(
+  text: string,
+): { name: string; status: SupplementLogStatus } | null {
+  const normalized = text.trim().toLowerCase();
+
+  if (!/\b(supplement|vitamin|creatine|magnesium|d3)\b/.test(normalized)) {
+    return null;
+  }
+
+  const status = /\b(skip|skipped|missed)\b/.test(normalized)
+    ? SupplementLogStatus.skipped
+    : /\b(take|taken|took|mark|logged|had)\b/.test(normalized)
+      ? SupplementLogStatus.taken
+      : null;
+
+  if (!status) {
+    return null;
+  }
+
+  const knownNames = ["magnesium", "creatine", "vitamin d3", "d3"];
+  const knownName = knownNames.find((name) => normalized.includes(name));
+
+  if (knownName) {
+    return {
+      name: knownName === "d3" ? "Vitamin D3" : knownName,
+      status,
+    };
+  }
+
+  const fallback = normalized
+    .replace(/\b(mark|take|taken|took|skip|skipped|missed|my|the|supplement|as|today|tonight)\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (fallback.length < 2) {
+    return null;
+  }
+
+  return {
+    name: fallback,
+    status,
   };
 }
 

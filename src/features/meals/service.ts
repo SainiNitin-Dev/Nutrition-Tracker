@@ -1,5 +1,5 @@
 import { MealType, LogSource } from "@/generated/prisma/client";
-import { demoCoachUserEmail } from "@/features/coach/context";
+import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
 
 export type CreateMealInput = {
@@ -19,10 +19,7 @@ export type CreateMealInput = {
 };
 
 export async function createMealForDemoUser(input: CreateMealInput) {
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: demoCoachUserEmail },
-    select: { id: true },
-  });
+  const user = await getCurrentOrDemoAppUser();
 
   return prisma.meal.create({
     data: {

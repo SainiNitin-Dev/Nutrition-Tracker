@@ -8,6 +8,7 @@ import {
   PrismaClient,
   SupplementLogStatus,
 } from "../src/generated/prisma/client";
+import { demoUserEmail } from "../src/lib/demo";
 
 config({ path: ".env.local" });
 
@@ -16,8 +17,6 @@ const adapter = new PrismaPg({
 });
 
 const prisma = new PrismaClient({ adapter });
-
-const demoUserEmail = "alex.demo@nourish.local";
 
 function todayAt(hours: number, minutes: number) {
   const date = new Date();
@@ -52,6 +51,14 @@ async function main() {
     data: { isActive: false },
   });
 
+  await prisma.aiActionLog.deleteMany({ where: { userId: user.id } });
+  await prisma.goal.deleteMany({ where: { userId: user.id } });
+  await prisma.meal.deleteMany({ where: { userId: user.id } });
+  await prisma.hydrationLog.deleteMany({ where: { userId: user.id } });
+  await prisma.supplement.deleteMany({ where: { userId: user.id } });
+  await prisma.coachMemory.deleteMany({ where: { userId: user.id } });
+  await prisma.coachConversation.deleteMany({ where: { userId: user.id } });
+
   await prisma.goal.create({
     data: {
       userId: user.id,
@@ -68,11 +75,6 @@ async function main() {
       isActive: true,
     },
   });
-
-  await prisma.meal.deleteMany({ where: { userId: user.id } });
-  await prisma.hydrationLog.deleteMany({ where: { userId: user.id } });
-  await prisma.supplement.deleteMany({ where: { userId: user.id } });
-  await prisma.coachMemory.deleteMany({ where: { userId: user.id } });
 
   await prisma.meal.createMany({
     data: [
@@ -154,9 +156,24 @@ async function main() {
 
   await prisma.hydrationLog.createMany({
     data: [
-      { userId: user.id, amountMl: 500, loggedAt: todayAt(7, 45), source: LogSource.manual },
-      { userId: user.id, amountMl: 700, loggedAt: todayAt(11, 30), source: LogSource.manual },
-      { userId: user.id, amountMl: 700, loggedAt: todayAt(15, 20), source: LogSource.coach },
+      {
+        userId: user.id,
+        amountMl: 500,
+        loggedAt: todayAt(7, 45),
+        source: LogSource.manual,
+      },
+      {
+        userId: user.id,
+        amountMl: 700,
+        loggedAt: todayAt(11, 30),
+        source: LogSource.manual,
+      },
+      {
+        userId: user.id,
+        amountMl: 700,
+        loggedAt: todayAt(15, 20),
+        source: LogSource.coach,
+      },
     ],
   });
 
