@@ -54,7 +54,7 @@ export default async function HydrationPage({
           </div>
         </header>
 
-        {params.added && <Notice tone="success">Water added to today’s log.</Notice>}
+        {params.added && <Notice tone="success">{"Water added to today's log."}</Notice>}
         {params.deleted && <Notice tone="success">Hydration log removed.</Notice>}
         {params.error && (
           <Notice tone="error">
@@ -111,7 +111,7 @@ function HydrationControl({
     <section className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-blue-600">Today’s goal</p>
+          <p className="text-sm font-medium text-blue-600">{"Today's goal"}</p>
           <h2 className="mt-1 text-4xl font-semibold tracking-tight">
             {Math.min(data.percent, 999)}%
           </h2>
@@ -219,7 +219,7 @@ function HydrationLog({
                 <div>
                   <h3 className="font-semibold text-slate-950">{log.amountMl}ml</h3>
                   <p className="text-sm text-slate-500">
-                    {log.time} · {log.source}
+                    {log.time} | {log.source}
                   </p>
                 </div>
               </div>

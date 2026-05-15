@@ -20,21 +20,23 @@ export const getCurrentAppUser = cache(async () => {
     return null;
   }
 
-  return prisma.user.upsert({
+  const existingUser = await prisma.user.findUnique({
     where: { email: user.email },
-    update: {
-      name:
-        user.user_metadata?.name ??
-        user.user_metadata?.full_name ??
-        user.email.split("@")[0],
-      imageUrl: user.user_metadata?.avatar_url ?? null,
-    },
-    create: {
+  });
+
+  if (existingUser) {
+    return prisma.user.update({
+      where: { id: existingUser.id },
+      data: {
+        imageUrl: user.user_metadata?.avatar_url ?? existingUser.imageUrl,
+      },
+    });
+  }
+
+  return prisma.user.create({
+    data: {
       email: user.email,
-      name:
-        user.user_metadata?.name ??
-        user.user_metadata?.full_name ??
-        user.email.split("@")[0],
+      name: user.user_metadata?.name ?? user.user_metadata?.full_name ?? user.email.split("@")[0],
       imageUrl: user.user_metadata?.avatar_url ?? null,
       profile: {
         create: {

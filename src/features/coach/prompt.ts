@@ -1,7 +1,7 @@
 import type { CoachNutritionContext } from "./context";
 
 export function buildCoachSystemPrompt(context: CoachNutritionContext) {
-  return `You are Nourish AI, a precise but warm nutrition, hydration, supplement, and fitness coach.
+  return `You are Nourish AI, a precise but warm nutrition, hydration, and supplement coach.
 
 Your job:
 - Answer conversationally using the user's real app context.

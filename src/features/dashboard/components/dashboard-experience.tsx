@@ -91,14 +91,10 @@ function TopBar({ name, dateLabel }: { name: string; dateLabel: string }) {
         >
           Account
         </Link>
-        <button
-          className="inline-flex h-11 cursor-not-allowed items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-400 shadow-sm"
-          disabled
-          title="Weekly filters are coming soon"
-        >
+        <span className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-medium text-slate-500 shadow-sm">
           This week
           <ChevronDown size={16} aria-hidden />
-        </button>
+        </span>
         <Link
           className="inline-flex h-11 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-medium text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
           href="/meals"
@@ -125,7 +121,9 @@ function Sidebar() {
                 ? "/hydration"
                 : item.label === "Supplements"
                   ? "/supplements"
-                  : null;
+                  : item.label === "Coach"
+                    ? "#coach"
+                    : null;
           const className = `group grid h-14 place-items-center rounded-2xl transition ${
             isActive
               ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
@@ -173,13 +171,13 @@ function HeroPanel({
             {remaining} calories left against a {goal.toLocaleString()} kcal goal.
           </p>
         </div>
-        <button
-          className="grid size-10 cursor-not-allowed place-items-center rounded-full border border-slate-200 text-slate-300"
-          disabled
-          title="More calorie options are coming soon"
+        <Link
+          className="grid size-10 place-items-center rounded-full border border-slate-200 text-slate-500 transition hover:-translate-y-0.5 hover:bg-slate-50"
+          href="/meals"
+          title="Open meals"
         >
           <MoreHorizontal size={18} aria-hidden />
-        </button>
+        </Link>
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-[180px_minmax(0,1fr)] sm:items-center">
@@ -278,7 +276,9 @@ function MealTimeline({ meals }: { meals: DashboardSnapshot["meals"] }) {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">Meal history</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Today’s plate</h2>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
+            {"Today's plate"}
+          </h2>
         </div>
         <Link
           className="inline-flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-100"
@@ -309,7 +309,7 @@ function MealTimeline({ meals }: { meals: DashboardSnapshot["meals"] }) {
                 </span>
               </div>
               <p className="mt-1 truncate text-sm text-slate-500">
-                {meal.items.join(" · ")}
+                {meal.items.join(" | ")}
               </p>
             </div>
             <div className="rounded-2xl bg-white px-4 py-3 text-sm shadow-sm">
@@ -339,7 +339,7 @@ function HydrationPanel({
             {hydration.currentMl.toLocaleString()} ml
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            {percent}% of today’s {hydration.goalMl.toLocaleString()} ml goal.
+            {`${percent}% of today's ${hydration.goalMl.toLocaleString()} ml goal.`}
           </p>
         </div>
         <div className="relative h-24 w-16 overflow-hidden rounded-b-3xl rounded-t-xl border border-blue-200 bg-white shadow-inner">
@@ -432,7 +432,7 @@ function SupplementPanel({
             <div>
               <h3 className="font-semibold text-slate-950">{supplement.name}</h3>
               <p className="text-sm text-slate-500">
-                {supplement.dose} · {supplement.time}
+                {supplement.dose} | {supplement.time}
               </p>
             </div>
             <span
@@ -519,16 +519,7 @@ function QuickActions({ actions }: { actions: DashboardSnapshot["quickActions"] 
                 <Icon className="text-slate-700" size={20} aria-hidden />
                 <span className="text-sm font-semibold text-slate-950">{action.label}</span>
               </a>
-            ) : (
-              <button
-                className="flex min-h-24 cursor-not-allowed flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left text-slate-400"
-                disabled
-                key={action.label}
-              >
-                <Icon className="text-slate-700" size={20} aria-hidden />
-                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
-              </button>
-            )
+            ) : null
           );
         })}
       </div>

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCurrentAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function updateNameAction(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -13,6 +14,11 @@ export async function updateNameAction(formData: FormData) {
   }
 
   const user = await requireCurrentAppUser();
+  const supabase = await createSupabaseServerClient();
+
+  await supabase.auth.updateUser({
+    data: { name },
+  });
 
   await prisma.user.update({
     where: { id: user.id },

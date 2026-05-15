@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://personalnutritiontracker.vercel.app"),
   title: "Nourish AI",
   description:
-    "An AI-powered nutrition, hydration, supplement, and fitness coach.",
+    "An AI-powered nutrition, hydration, and supplement coach.",
   applicationName: "Nourish AI",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

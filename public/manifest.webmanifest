@@ -1,7 +1,7 @@
 {
   "name": "Nourish AI",
   "short_name": "Nourish AI",
-  "description": "An AI-powered nutrition, hydration, supplement, and fitness coach.",
+  "description": "An AI-powered nutrition, hydration, and supplement coach.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
