@@ -15,7 +15,11 @@ const tabs = [
 export function MobileTabBar() {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/login") || pathname.startsWith("/onboarding")) {
+  if (
+    pathname.startsWith("/coach") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/onboarding")
+  ) {
     return null;
   }
 

@@ -127,25 +127,29 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
 
   return (
     <section
-      className={`animate-rise-in flex flex-col rounded-[32px] border border-slate-900 bg-slate-950 p-5 text-white shadow-[0_24px_70px_rgba(15,23,42,0.25)] ${
-        variant === "conversation" ? "min-h-[calc(100svh-240px)] flex-1" : ""
+      className={`animate-rise-in flex flex-col bg-slate-950 text-white ${
+        variant === "conversation"
+          ? "min-h-0 flex-1 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4"
+          : "rounded-[32px] border border-slate-900 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.25)]"
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-blue-200">AI coach</p>
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight">
-            Context-aware guidance
-          </h2>
+      {variant === "card" && (
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-blue-200">AI coach</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight">
+              Context-aware guidance
+            </h2>
+          </div>
+          <div className="grid size-11 place-items-center rounded-2xl bg-white/10">
+            <MessageCircle size={20} aria-hidden />
+          </div>
         </div>
-        <div className="grid size-11 place-items-center rounded-2xl bg-white/10">
-          <MessageCircle size={20} aria-hidden />
-        </div>
-      </div>
+      )}
 
       <div
-        className={`mt-5 space-y-3 overflow-y-auto pr-1 ${
-          variant === "conversation" ? "min-h-0 flex-1" : "max-h-[380px]"
+        className={`space-y-3 overflow-y-auto pr-1 ${
+          variant === "conversation" ? "min-h-0 flex-1 pt-2" : "mt-5 max-h-[380px]"
         }`}
       >
         {hasConversation
@@ -190,7 +194,14 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
         ))}
       </div>
 
-      <form className="mt-4 flex items-center gap-2" onSubmit={handleSubmit}>
+      <form
+        className={`mt-4 flex items-center gap-2 ${
+          variant === "conversation"
+            ? "rounded-[28px] border border-white/10 bg-white/[0.06] p-2"
+            : ""
+        }`}
+        onSubmit={handleSubmit}
+      >
         <label className="sr-only" htmlFor="coach-message">
           Ask the AI coach
         </label>
