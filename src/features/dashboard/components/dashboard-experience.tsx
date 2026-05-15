@@ -52,13 +52,16 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
               percent={caloriePercent}
             />
             <MacroPanel macros={snapshot.macros} />
-            <MealTimeline meals={snapshot.meals} />
-            <HydrationPanel hydration={snapshot.hydration} />
-            <WeeklyPanel values={snapshot.weeklyCalories} />
-            <SupplementPanel supplements={snapshot.supplements} />
+            <div className="hidden lg:contents">
+              <MealTimeline meals={snapshot.meals} />
+              <HydrationPanel hydration={snapshot.hydration} />
+              <WeeklyPanel values={snapshot.weeklyCalories} />
+              <SupplementPanel supplements={snapshot.supplements} />
+            </div>
+            <MobileTodayActions />
           </section>
 
-          <aside className="grid content-start gap-5" id="coach">
+          <aside className="hidden content-start gap-5 lg:grid" id="coach">
             <CoachChatPanel insights={snapshot.insights} />
             <SignalsPanel signals={snapshot.signals} />
             <QuickActions actions={snapshot.quickActions} />
@@ -122,7 +125,7 @@ function Sidebar() {
                 : item.label === "Supplements"
                   ? "/supplements"
                   : item.label === "Coach"
-                    ? "#coach"
+                    ? "/coach"
                     : null;
           const className = `group grid h-14 place-items-center rounded-2xl transition ${
             isActive
@@ -510,19 +513,58 @@ function QuickActions({ actions }: { actions: DashboardSnapshot["quickActions"] 
                 <Icon className="text-slate-700" size={20} aria-hidden />
                 <span className="text-sm font-semibold text-slate-950">{action.label}</span>
               </Link>
-            ) : action.label === "Ask coach" ? (
-              <a
+          ) : action.label === "Ask coach" ? (
+              <Link
                 className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
-                href="#coach"
+                href="/coach"
                 key={action.label}
               >
                 <Icon className="text-slate-700" size={20} aria-hidden />
                 <span className="text-sm font-semibold text-slate-950">{action.label}</span>
-              </a>
+              </Link>
             ) : null
           );
         })}
       </div>
+    </section>
+  );
+}
+
+function MobileTodayActions() {
+  return (
+    <section className="animate-rise-in grid grid-cols-2 gap-3 lg:hidden">
+      <Link
+        className="rounded-[26px] border border-white/80 bg-white/82 p-4 shadow-[0_18px_50px_rgba(30,41,59,0.06)]"
+        href="/meals"
+      >
+        <p className="text-sm font-medium text-blue-600">Meals</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight">Log food</h2>
+        <p className="mt-1 text-sm text-slate-500">Open your daily meal timeline.</p>
+      </Link>
+      <Link
+        className="rounded-[26px] border border-white/80 bg-white/82 p-4 shadow-[0_18px_50px_rgba(30,41,59,0.06)]"
+        href="/hydration"
+      >
+        <p className="text-sm font-medium text-blue-600">Water</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight">Quick add</h2>
+        <p className="mt-1 text-sm text-slate-500">Track hydration without scrolling.</p>
+      </Link>
+      <Link
+        className="rounded-[26px] border border-white/80 bg-white/82 p-4 shadow-[0_18px_50px_rgba(30,41,59,0.06)]"
+        href="/supplements"
+      >
+        <p className="text-sm font-medium text-blue-600">Stack</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight">Supplements</h2>
+        <p className="mt-1 text-sm text-slate-500">Mark doses and adjust timing.</p>
+      </Link>
+      <Link
+        className="rounded-[26px] border border-slate-950 bg-slate-950 p-4 text-white shadow-[0_18px_50px_rgba(15,23,42,0.2)]"
+        href="/coach"
+      >
+        <p className="text-sm font-medium text-blue-200">Coach</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight">Ask AI</h2>
+        <p className="mt-1 text-sm text-slate-300">Chat and log naturally.</p>
+      </Link>
     </section>
   );
 }

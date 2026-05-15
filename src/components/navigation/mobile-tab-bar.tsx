@@ -9,7 +9,7 @@ const tabs = [
   { label: "Meals", href: "/meals", icon: Utensils },
   { label: "Water", href: "/hydration", icon: Droplets },
   { label: "Stack", href: "/supplements", icon: Pill },
-  { label: "Coach", href: "/#coach", icon: Bot },
+  { label: "Coach", href: "/coach", icon: Bot },
 ];
 
 export function MobileTabBar() {
@@ -30,9 +30,7 @@ export function MobileTabBar() {
           const isActive =
             tab.href === "/"
               ? pathname === "/"
-              : tab.href === "/#coach"
-                ? false
-                : pathname.startsWith(tab.href);
+              : pathname.startsWith(tab.href);
 
           return (
             <Link

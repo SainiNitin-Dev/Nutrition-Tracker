@@ -6,6 +6,7 @@ import { ArrowRight, Loader2, MessageCircle, Send } from "lucide-react";
 
 type CoachChatPanelProps = {
   insights: string[];
+  variant?: "card" | "conversation";
 };
 
 type ChatMessage = {
@@ -20,7 +21,7 @@ const starterPrompts = [
   "I drank 500ml water",
 ];
 
-export function CoachChatPanel({ insights }: CoachChatPanelProps) {
+export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -125,7 +126,11 @@ export function CoachChatPanel({ insights }: CoachChatPanelProps) {
   }
 
   return (
-    <section className="animate-rise-in rounded-[32px] border border-slate-900 bg-slate-950 p-5 text-white shadow-[0_24px_70px_rgba(15,23,42,0.25)]">
+    <section
+      className={`animate-rise-in flex flex-col rounded-[32px] border border-slate-900 bg-slate-950 p-5 text-white shadow-[0_24px_70px_rgba(15,23,42,0.25)] ${
+        variant === "conversation" ? "min-h-[calc(100svh-240px)] flex-1" : ""
+      }`}
+    >
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-blue-200">AI coach</p>
@@ -138,7 +143,11 @@ export function CoachChatPanel({ insights }: CoachChatPanelProps) {
         </div>
       </div>
 
-      <div className="mt-5 max-h-[380px] space-y-3 overflow-y-auto pr-1">
+      <div
+        className={`mt-5 space-y-3 overflow-y-auto pr-1 ${
+          variant === "conversation" ? "min-h-0 flex-1" : "max-h-[380px]"
+        }`}
+      >
         {hasConversation
           ? messages.map((message) => (
               <article
