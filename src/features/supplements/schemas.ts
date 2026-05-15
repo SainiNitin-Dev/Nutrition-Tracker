@@ -16,4 +16,11 @@ export const supplementIdSchema = z.object({
   supplementId: z.string().min(1),
 });
 
+export const supplementScheduleSchema = supplementIdSchema.extend({
+  timeOfDay: z
+    .string()
+    .trim()
+    .regex(/^\d{2}:\d{2}$/),
+});
+
 export type SupplementInput = z.infer<typeof supplementSchema>;

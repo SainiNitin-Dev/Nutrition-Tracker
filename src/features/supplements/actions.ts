@@ -3,11 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { SupplementLogStatus } from "@/generated/prisma/client";
-import { supplementIdSchema, supplementSchema } from "./schemas";
+import {
+  supplementIdSchema,
+  supplementScheduleSchema,
+  supplementSchema,
+} from "./schemas";
 import {
   createSupplementForCurrentUser,
   deactivateSupplementForCurrentUser,
   logSupplementForDemoUser,
+  updateSupplementScheduleForCurrentUser,
 } from "./service";
 
 export async function addSupplementAction(formData: FormData) {
@@ -64,4 +69,21 @@ export async function deleteSupplementAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/supplements");
   redirect("/supplements?deleted=1");
+}
+
+export async function updateSupplementScheduleAction(formData: FormData) {
+  const parsed = supplementScheduleSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    redirect("/supplements?error=invalid-schedule");
+  }
+
+  await updateSupplementScheduleForCurrentUser(
+    parsed.data.supplementId,
+    parsed.data.timeOfDay,
+  );
+
+  revalidatePath("/");
+  revalidatePath("/supplements");
+  redirect("/supplements?scheduleUpdated=1");
 }

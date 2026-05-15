@@ -6,6 +6,9 @@ import type { DashboardSnapshot } from "./data";
 
 export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
   const userWhere = await getCurrentOrDemoUserWhereUnique();
+  const today = startOfToday();
+  const tomorrow = startOfTomorrow();
+  const weekStart = startOfDayOffset(-6);
   const user = await prisma.user.findUnique({
     where: userWhere,
     include: {
@@ -17,8 +20,8 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
       meals: {
         where: {
           date: {
-            gte: startOfToday(),
-            lt: startOfTomorrow(),
+            gte: weekStart,
+            lt: tomorrow,
           },
         },
         include: {
@@ -29,8 +32,8 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
       hydrationLogs: {
         where: {
           loggedAt: {
-            gte: startOfToday(),
-            lt: startOfTomorrow(),
+            gte: weekStart,
+            lt: tomorrow,
           },
         },
       },
@@ -41,8 +44,8 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
           logs: {
             where: {
               takenAt: {
-                gte: startOfToday(),
-                lt: startOfTomorrow(),
+                gte: today,
+                lt: tomorrow,
               },
             },
           },
@@ -61,8 +64,9 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
   }
 
   const goal = user.goals[0];
-  const mealTotals = user.meals.map((meal) =>
-    addNutrientTotals(
+  const mealsWithTotals = user.meals.map((meal) => ({
+    meal,
+    totals: addNutrientTotals(
       meal.items.map((item) => ({
         calories: Number(item.calories),
         protein: Number(item.protein),
@@ -73,37 +77,80 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
         sodium: Number(item.sodium ?? 0),
       })),
     ),
-  );
-  const totals = addNutrientTotals(mealTotals);
+  }));
+  const todayMeals = mealsWithTotals.filter(({ meal }) => meal.date >= today);
+  const totals = addNutrientTotals(todayMeals.map(({ totals }) => totals));
   const hydrationTotal = user.hydrationLogs.reduce(
-    (sum, log) => sum + log.amountMl,
+    (sum, log) => (log.loggedAt >= today ? sum + log.amountMl : sum),
     0,
   );
+  const weeklyCalories = lastSevenDays().map(({ start, end }) =>
+    Math.round(
+      mealsWithTotals
+        .filter(({ meal }) => meal.date >= start && meal.date < end)
+        .reduce((sum, { totals }) => sum + totals.calories, 0),
+    ),
+  );
+  const activeDays = lastSevenDays().map(({ start, end }) => {
+    const hasMeal = mealsWithTotals.some(
+      ({ meal }) => meal.date >= start && meal.date < end,
+    );
+    const hasHydration = user.hydrationLogs.some(
+      (log) => log.loggedAt >= start && log.loggedAt < end,
+    );
+
+    return hasMeal || hasHydration;
+  });
+  const streak = calculateCurrentStreak(activeDays);
+  const waterGoal = goal?.waterMl ?? dashboardSnapshot.hydration.goalMl;
+  const fiberGoal = Number(
+    goal?.fiberGrams ??
+      dashboardSnapshot.macros.find((macro) => macro.label === "Fiber")?.goal ??
+      35,
+  );
+  const supplementTotal = user.supplements.length;
+  const supplementTaken = user.supplements.filter((supplement) =>
+    supplement.logs.some((log) => log.status === "taken"),
+  ).length;
+  const supplementPercent = supplementTotal
+    ? Math.round((supplementTaken / supplementTotal) * 100)
+    : 0;
+  const hydratedWeekDays = lastSevenDays().filter(({ start, end }) => {
+    const dailyTotal = user.hydrationLogs.reduce(
+      (sum, log) =>
+        log.loggedAt >= start && log.loggedAt < end ? sum + log.amountMl : sum,
+      0,
+    );
+
+    return dailyTotal >= waterGoal * 0.8;
+  }).length;
+  const weeklyHydrationPercent = Math.round((hydratedWeekDays / 7) * 100);
+  const hydrationPercent = Math.round((hydrationTotal / waterGoal) * 100);
+  const fiberTotal = totals.fiber ?? 0;
+  const fiberPercent = Math.round((fiberTotal / fiberGoal) * 100);
+  const calorieGoal = goal?.targetCalories ?? dashboardSnapshot.calories.goal;
 
   return {
     ...dashboardSnapshot,
     userName: user.name ?? "Alex",
+    dateLabel: formatTodayLabel(),
     calories: {
       current: Math.round(totals.calories),
-      goal: goal?.targetCalories ?? dashboardSnapshot.calories.goal,
-      remaining: Math.max(
-        (goal?.targetCalories ?? dashboardSnapshot.calories.goal) -
-          Math.round(totals.calories),
-        0,
-      ),
+      goal: calorieGoal,
+      remaining: Math.max(calorieGoal - Math.round(totals.calories), 0),
     },
     macros: dashboardSnapshot.macros.map((macro) => {
       const goals = {
         Protein: Number(goal?.proteinGrams ?? macro.goal),
         Carbs: Number(goal?.carbsGrams ?? macro.goal),
         Fats: Number(goal?.fatGrams ?? macro.goal),
-        Fiber: Number(goal?.fiberGrams ?? macro.goal),
+        Fiber: fiberGoal,
       };
       const currents = {
         Protein: Math.round(totals.protein),
         Carbs: Math.round(totals.carbs),
         Fats: Math.round(totals.fat),
-        Fiber: Math.round(totals.fiber ?? 0),
+        Fiber: Math.round(fiberTotal),
       };
 
       return {
@@ -115,23 +162,19 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
     hydration: {
       ...dashboardSnapshot.hydration,
       currentMl: hydrationTotal,
-      goalMl: goal?.waterMl ?? dashboardSnapshot.hydration.goalMl,
+      goalMl: waterGoal,
     },
-    meals: user.meals.map((meal, index) => {
-      const total = mealTotals[index];
-
-      return {
-        name: formatMealType(meal.mealType),
-        time: meal.date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        }),
-        calories: Math.round(total.calories),
-        protein: Math.round(total.protein),
-        accent: dashboardSnapshot.meals[index]?.accent ?? "#3b82f6",
-        items: meal.items.map((item) => item.name),
-      };
-    }),
+    meals: todayMeals.map(({ meal, totals }, index) => ({
+      name: formatMealType(meal.mealType),
+      time: meal.date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }),
+      calories: Math.round(totals.calories),
+      protein: Math.round(totals.protein),
+      accent: dashboardSnapshot.meals[index]?.accent ?? "#3b82f6",
+      items: meal.items.map((item) => item.name),
+    })),
     supplements: user.supplements.map((supplement) => {
       const log = supplement.logs[0];
       const schedule = supplement.schedules[0];
@@ -143,11 +186,107 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
         status: log?.status === "taken" ? "taken" : "upcoming",
       };
     }),
+    weeklyCalories,
+    signals: dashboardSnapshot.signals.map((signal) => {
+      if (signal.label === "Streak") {
+        return {
+          ...signal,
+          value: `${streak} ${streak === 1 ? "day" : "days"}`,
+        };
+      }
+
+      if (signal.label === "Hydration") {
+        return {
+          ...signal,
+          value: `${Math.min(Math.max(weeklyHydrationPercent, hydrationPercent), 100)}%`,
+        };
+      }
+
+      if (signal.label === "Fiber") {
+        return {
+          ...signal,
+          value: `${Math.min(fiberPercent, 100)}%`,
+        };
+      }
+
+      if (signal.label === "Supplements") {
+        return {
+          ...signal,
+          value: supplementTotal ? `${supplementPercent}%` : "None",
+        };
+      }
+
+      return signal;
+    }),
     insights:
       user.memories.length > 0
         ? user.memories.map((memory) => memory.content)
-        : dashboardSnapshot.insights,
+        : buildFallbackInsights({
+            caloriesRemaining: calorieGoal - Math.round(totals.calories),
+            hydrationPercent,
+            supplementPercent,
+            supplementTotal,
+          }),
   };
+}
+
+function buildFallbackInsights({
+  caloriesRemaining,
+  hydrationPercent,
+  supplementPercent,
+  supplementTotal,
+}: {
+  caloriesRemaining: number;
+  hydrationPercent: number;
+  supplementPercent: number;
+  supplementTotal: number;
+}) {
+  const insights = [
+    caloriesRemaining > 0
+      ? `You have about ${caloriesRemaining} calories left for today.`
+      : "You are at or above today's calorie target, so keep the rest of the day lighter.",
+    hydrationPercent >= 80
+      ? "Hydration is on pace today."
+      : "Hydration is behind pace. A 500 ml add would move the day forward.",
+  ];
+
+  if (supplementTotal > 0) {
+    insights.push(`Supplement adherence is ${supplementPercent}% today.`);
+  } else {
+    insights.push("No supplements are scheduled yet.");
+  }
+
+  return insights;
+}
+
+function calculateCurrentStreak(activeDays: boolean[]) {
+  let streak = 0;
+
+  for (let index = activeDays.length - 1; index >= 0; index -= 1) {
+    if (!activeDays[index]) {
+      break;
+    }
+
+    streak += 1;
+  }
+
+  return streak;
+}
+
+function lastSevenDays() {
+  return Array.from({ length: 7 }, (_, index) => {
+    const start = startOfDayOffset(index - 6);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    return { start, end };
+  });
+}
+
+function startOfDayOffset(offset: number) {
+  const date = startOfToday();
+  date.setDate(date.getDate() + offset);
+  return date;
 }
 
 function startOfToday() {
@@ -160,6 +299,14 @@ function startOfTomorrow() {
   const date = startOfToday();
   date.setDate(date.getDate() + 1);
   return date;
+}
+
+function formatTodayLabel() {
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(new Date());
 }
 
 function formatMealType(mealType: string) {

@@ -42,6 +42,46 @@ export async function deactivateSupplementForCurrentUser(supplementId: string) {
   });
 }
 
+export async function updateSupplementScheduleForCurrentUser(
+  supplementId: string,
+  timeOfDay: string,
+) {
+  const user = await getCurrentOrDemoAppUser();
+  const supplement = await prisma.supplement.findFirstOrThrow({
+    where: {
+      id: supplementId,
+      userId: user.id,
+      active: true,
+    },
+    include: {
+      schedules: {
+        take: 1,
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
+  const existingSchedule = supplement.schedules[0];
+
+  if (existingSchedule) {
+    return prisma.supplementSchedule.update({
+      where: { id: existingSchedule.id },
+      data: {
+        timeOfDay,
+        reminderEnabled: true,
+      },
+    });
+  }
+
+  return prisma.supplementSchedule.create({
+    data: {
+      supplementId,
+      timeOfDay,
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
+      reminderEnabled: true,
+    },
+  });
+}
+
 export async function logSupplementForDemoUser(
   supplementId: string,
   status: SupplementLogStatus,

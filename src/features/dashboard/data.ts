@@ -43,6 +43,12 @@ export type QuickAction = {
   icon: LucideIcon;
 };
 
+export type NutritionSignal = {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+};
+
 export type DashboardSnapshot = {
   userName: string;
   dateLabel: string;
@@ -62,6 +68,7 @@ export type DashboardSnapshot = {
   weeklyCalories: number[];
   insights: string[];
   quickActions: QuickAction[];
+  signals: NutritionSignal[];
 };
 
 export const dashboardSnapshot: DashboardSnapshot = {
@@ -126,6 +133,12 @@ export const dashboardSnapshot: DashboardSnapshot = {
     { label: "Supplement", icon: Pill },
     { label: "Ask coach", icon: Bot },
   ],
+  signals: [
+    { label: "Streak", value: "0 days", icon: Flame },
+    { label: "Hydration", value: "0%", icon: HeartPulse },
+    { label: "Fiber", value: "0%", icon: Apple },
+    { label: "Supplements", value: "0%", icon: Plus },
+  ],
 };
 
 export const dashboardNav = [
@@ -136,9 +149,3 @@ export const dashboardNav = [
   { label: "Coach", icon: Sparkles },
 ];
 
-export const nutritionSignals = [
-  { label: "Streak", value: "12 days", icon: Flame },
-  { label: "Recovery", value: "Good", icon: HeartPulse },
-  { label: "Micros", value: "82%", icon: Apple },
-  { label: "Log", value: "Quick add", icon: Plus },
-];

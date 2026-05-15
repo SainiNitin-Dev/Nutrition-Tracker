@@ -8,6 +8,7 @@ import {
   Sparkles,
   UserRound,
 } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { signInWithPasswordAction, signUpWithPasswordAction } from "./actions";
 
 type LoginPageProps = {
@@ -127,19 +128,21 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </label>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <button
-                className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
+              <PendingSubmitButton
+                className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
                 formAction={signInWithPasswordAction}
+                pendingLabel="Signing in..."
               >
                 Sign in
                 <ArrowRight size={17} aria-hidden />
-              </button>
-              <button
-                className="inline-flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              </PendingSubmitButton>
+              <PendingSubmitButton
+                className="inline-flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-70"
                 formAction={signUpWithPasswordAction}
+                pendingLabel="Creating..."
               >
                 Create account
-              </button>
+              </PendingSubmitButton>
             </div>
           </form>
 

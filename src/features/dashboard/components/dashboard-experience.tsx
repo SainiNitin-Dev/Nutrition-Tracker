@@ -10,7 +10,7 @@ import {
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { CoachChatPanel } from "@/features/coach/components/coach-chat-panel";
 import { addHydrationAction } from "@/features/hydration/actions";
-import { dashboardNav, nutritionSignals } from "../data";
+import { dashboardNav } from "../data";
 import type { DashboardSnapshot, Macro } from "../data";
 
 type DashboardExperienceProps = {
@@ -60,7 +60,7 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
 
           <aside className="grid content-start gap-5" id="coach">
             <CoachChatPanel insights={snapshot.insights} />
-            <SignalsPanel />
+            <SignalsPanel signals={snapshot.signals} />
             <QuickActions actions={snapshot.quickActions} />
           </aside>
         </div>
@@ -452,10 +452,10 @@ function SupplementPanel({
   );
 }
 
-function SignalsPanel() {
+function SignalsPanel({ signals }: { signals: DashboardSnapshot["signals"] }) {
   return (
     <section className="animate-rise-in grid grid-cols-2 gap-3">
-      {nutritionSignals.map((signal) => {
+      {signals.map((signal) => {
         const Icon = signal.icon;
 
         return (

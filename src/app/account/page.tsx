@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, LogOut, Save, Target, UserRound } from "lucide-react";
+import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
 import { getCurrentAppUserWithActiveGoal } from "@/lib/auth/current-user";
 import { signOutAction } from "@/app/login/actions";
 import { updateNameAction } from "./actions";
@@ -76,10 +77,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                     required
                   />
                 </label>
-                <button className="inline-flex h-11 w-fit items-center gap-2 rounded-full bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700">
+                <PendingSubmitButton
+                  className="inline-flex h-11 w-fit items-center gap-2 rounded-full bg-blue-600 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-wait disabled:opacity-70"
+                  pendingLabel="Saving..."
+                >
                   <Save size={16} aria-hidden />
                   Save name
-                </button>
+                </PendingSubmitButton>
               </form>
 
               <div className="mt-6 flex flex-wrap gap-2">
@@ -91,10 +95,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   {user.goals.length > 0 ? "Edit targets" : "Complete setup"}
                 </Link>
                 <form action={signOutAction}>
-                  <button className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                  <PendingSubmitButton
+                    className="inline-flex h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-wait disabled:opacity-70"
+                    pendingLabel="Signing out..."
+                  >
                     <LogOut size={16} aria-hidden />
                     Sign out
-                  </button>
+                  </PendingSubmitButton>
                 </form>
               </div>
             </>

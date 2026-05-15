@@ -1,33 +1,31 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 
-type PendingSubmitButtonProps = {
+type PendingSubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
   className: string;
   pendingLabel?: string;
-  title?: string;
-  ariaLabel?: string;
 };
 
 export function PendingSubmitButton({
   children,
   className,
   pendingLabel,
-  title,
-  ariaLabel,
+  disabled,
+  type = "submit",
+  ...buttonProps
 }: PendingSubmitButtonProps) {
   const { pending } = useFormStatus();
 
   return (
     <button
-      aria-label={ariaLabel}
+      {...buttonProps}
       className={className}
-      disabled={pending}
-      title={title}
-      type="submit"
+      disabled={pending || disabled}
+      type={type}
     >
       {pending ? (
         pendingLabel ? (
