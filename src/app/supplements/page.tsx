@@ -72,8 +72,8 @@ export default async function SupplementsPage({
           </Notice>
         )}
 
-        <section className="grid gap-5 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <div className="grid gap-5">
+        <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+          <div className="grid min-w-0 gap-5">
             <AddSupplementForm />
             <ProgressPanel
               completionPercent={completionPercent}
@@ -123,7 +123,7 @@ function AddSupplementForm() {
   return (
     <form
       action={addSupplementAction}
-      className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]"
+      className="min-w-0 overflow-hidden rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]"
     >
       <div className="flex items-center justify-between">
         <div>
@@ -138,7 +138,7 @@ function AddSupplementForm() {
       <div className="mt-6 grid gap-4">
         <TextInput label="Name" name="name" placeholder="Creatine" />
 
-        <div className="grid grid-cols-[1fr_0.8fr] gap-3">
+        <div className="grid gap-3 sm:grid-cols-[1fr_0.8fr]">
           <NumberInput label="Dosage" name="dosageAmount" placeholder="5" />
           <TextInput label="Unit" name="dosageUnit" placeholder="g" />
         </div>
@@ -191,7 +191,7 @@ function TextInput({
   required?: boolean;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-medium text-slate-700">
+    <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
       {label}
       <input
         className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
@@ -213,7 +213,7 @@ function NumberInput({
   placeholder: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm font-medium text-slate-700">
+    <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
       {label}
       <input
         className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
@@ -237,7 +237,7 @@ function ProgressPanel({
   total: number;
 }) {
   return (
-    <section className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
+    <section className="min-w-0 overflow-hidden rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-blue-600">Daily adherence</p>
@@ -312,7 +312,7 @@ function SupplementList({
         {supplements.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
             <p className="font-semibold text-slate-950">No active supplements yet.</p>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
               {"Add your first supplement and it will appear in today's schedule."}
             </p>
           </div>

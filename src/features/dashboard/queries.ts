@@ -8,7 +8,8 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
   const userWhere = await getCurrentOrDemoUserWhereUnique();
   const today = startOfToday();
   const tomorrow = startOfTomorrow();
-  const weekStart = startOfDayOffset(-6);
+  const currentWeekStart = startOfCurrentWeek();
+  const rollingWeekStart = startOfDayOffset(-6);
   const user = await prisma.user.findUnique({
     where: userWhere,
     include: {
@@ -20,7 +21,7 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
       meals: {
         where: {
           date: {
-            gte: weekStart,
+            gte: rollingWeekStart < currentWeekStart ? rollingWeekStart : currentWeekStart,
             lt: tomorrow,
           },
         },
@@ -32,7 +33,7 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
       hydrationLogs: {
         where: {
           loggedAt: {
-            gte: weekStart,
+            gte: rollingWeekStart < currentWeekStart ? rollingWeekStart : currentWeekStart,
             lt: tomorrow,
           },
         },
@@ -84,7 +85,7 @@ export async function getTodayDashboardSnapshot(): Promise<DashboardSnapshot> {
     (sum, log) => (log.loggedAt >= today ? sum + log.amountMl : sum),
     0,
   );
-  const weeklyCalories = lastSevenDays().map(({ start, end }) =>
+  const weeklyCalories = currentWeekDays().map(({ start, end }) =>
     Math.round(
       mealsWithTotals
         .filter(({ meal }) => meal.date >= start && meal.date < end)
@@ -281,6 +282,26 @@ function lastSevenDays() {
 
     return { start, end };
   });
+}
+
+function currentWeekDays() {
+  const weekStart = startOfCurrentWeek();
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const start = new Date(weekStart);
+    start.setDate(start.getDate() + index);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    return { start, end };
+  });
+}
+
+function startOfCurrentWeek() {
+  const date = startOfToday();
+  const daysSinceMonday = (date.getDay() + 6) % 7;
+  date.setDate(date.getDate() - daysSinceMonday);
+  return date;
 }
 
 function startOfDayOffset(offset: number) {
