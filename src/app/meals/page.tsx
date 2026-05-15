@@ -1,7 +1,22 @@
 import Link from "next/link";
-import { ArrowLeft, Flame, Plus, Salad, Sparkles, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  BookmarkPlus,
+  CopyPlus,
+  Flame,
+  Plus,
+  Salad,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
-import { addManualMealAction, deleteMealAction } from "@/features/meals/actions";
+import {
+  addManualMealAction,
+  deleteMealAction,
+  deleteMealTemplateAction,
+  logMealTemplateAction,
+  saveMealTemplateAction,
+} from "@/features/meals/actions";
 import { getMealTrackerData } from "@/features/meals/queries";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +25,9 @@ type MealsPageProps = {
   searchParams: Promise<{
     created?: string;
     deleted?: string;
+    logged?: string;
+    saved?: string;
+    templateDeleted?: string;
     error?: string;
   }>;
 };
@@ -37,7 +55,7 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
               <div>
                 <p className="text-sm font-medium text-blue-600">Meal tracking</p>
                 <h1 className="text-3xl font-semibold tracking-tight">
-                  Build today’s nutrition log
+                  {"Build today's nutrition log"}
                 </h1>
               </div>
             </div>
@@ -59,8 +77,11 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
           </div>
         </header>
 
-        {params.created && <Notice tone="success">Meal added to today’s log.</Notice>}
-        {params.deleted && <Notice tone="success">Meal removed from today’s log.</Notice>}
+        {params.created && <Notice tone="success">{"Meal added to today's log."}</Notice>}
+        {params.deleted && <Notice tone="success">{"Meal removed from today's log."}</Notice>}
+        {params.saved && <Notice tone="success">Meal saved for one-click logging.</Notice>}
+        {params.logged && <Notice tone="success">Saved meal logged for today.</Notice>}
+        {params.templateDeleted && <Notice tone="success">Saved meal deleted.</Notice>}
         {params.error && (
           <Notice tone="error">
             Something in the meal form needs attention. Check the numbers and try again.
@@ -68,7 +89,10 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
         )}
 
         <section className="grid gap-5 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <MealForm />
+          <div className="grid gap-5">
+            <MealForm />
+            <SavedMealTemplates templates={data.templates} />
+          </div>
           <MealList meals={data.meals} />
         </section>
       </div>
@@ -242,6 +266,85 @@ function NumberInput({
   );
 }
 
+function SavedMealTemplates({
+  templates,
+}: {
+  templates: Awaited<ReturnType<typeof getMealTrackerData>>["templates"];
+}) {
+  return (
+    <section className="rounded-[32px] border border-white/80 bg-white p-6 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Personal library</p>
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight">Saved meals</h2>
+        </div>
+        <div className="grid size-11 place-items-center rounded-2xl bg-sky-50 text-sky-600">
+          <BookmarkPlus size={20} aria-hidden />
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3">
+        {templates.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-5">
+            <p className="font-semibold text-slate-950">No saved meals yet.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {"Save a meal from today's timeline, then log it later without typing the same nutrition again."}
+            </p>
+          </div>
+        ) : (
+          templates.map((template) => (
+            <article
+              className="rounded-3xl border border-slate-100 bg-gradient-to-br from-slate-50 to-blue-50/40 p-4"
+              key={template.id}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-blue-600">
+                    {template.mealType}
+                  </span>
+                  <h3 className="mt-3 text-base font-semibold text-slate-950">
+                    {template.title}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {Math.round(template.totals.calories)} cal |{" "}
+                    {Math.round(template.totals.protein)}g protein
+                  </p>
+                </div>
+                <form action={deleteMealTemplateAction}>
+                  <input name="templateId" type="hidden" value={template.id} />
+                  <PendingSubmitButton
+                    aria-label={`Delete saved meal ${template.title}`}
+                    className="grid size-9 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:-translate-y-0.5 hover:text-rose-500"
+                    title="Delete saved meal"
+                  >
+                    <Trash2 size={15} aria-hidden />
+                  </PendingSubmitButton>
+                </form>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <p className="truncate text-sm text-slate-500">
+                  {template.items.map((item) => item.name).join(", ")}
+                </p>
+                <form action={logMealTemplateAction}>
+                  <input name="templateId" type="hidden" value={template.id} />
+                  <PendingSubmitButton
+                    className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-md shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-800"
+                    pendingLabel="Logging..."
+                  >
+                    <CopyPlus size={15} aria-hidden />
+                    Log
+                  </PendingSubmitButton>
+                </form>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+    </section>
+  );
+}
+
 function MealList({
   meals,
 }: {
@@ -287,20 +390,32 @@ function MealList({
                   <p className="mt-1 text-sm text-slate-500">
                     {meal.items
                       .map((item) => `${item.name} (${item.quantity}${item.unit})`)
-                      .join(" · ")}
+                      .join(" | ")}
                   </p>
                 </div>
 
-                <form action={deleteMealAction}>
-                  <input name="mealId" type="hidden" value={meal.id} />
-                  <PendingSubmitButton
-                    aria-label={`Delete ${meal.title}`}
-                    className="grid size-10 place-items-center rounded-full border border-rose-100 bg-white text-rose-500 transition hover:-translate-y-0.5 hover:bg-rose-50"
-                    title="Delete meal"
-                  >
-                    <Trash2 size={16} aria-hidden />
-                  </PendingSubmitButton>
-                </form>
+                <div className="flex items-center gap-2">
+                  <form action={saveMealTemplateAction}>
+                    <input name="mealId" type="hidden" value={meal.id} />
+                    <PendingSubmitButton
+                      aria-label={`Save ${meal.title}`}
+                      className="grid size-10 place-items-center rounded-full border border-blue-100 bg-white text-blue-600 transition hover:-translate-y-0.5 hover:bg-blue-50"
+                      title="Save meal"
+                    >
+                      <BookmarkPlus size={16} aria-hidden />
+                    </PendingSubmitButton>
+                  </form>
+                  <form action={deleteMealAction}>
+                    <input name="mealId" type="hidden" value={meal.id} />
+                    <PendingSubmitButton
+                      aria-label={`Delete ${meal.title}`}
+                      className="grid size-10 place-items-center rounded-full border border-rose-100 bg-white text-rose-500 transition hover:-translate-y-0.5 hover:bg-rose-50"
+                      title="Delete meal"
+                    >
+                      <Trash2 size={16} aria-hidden />
+                    </PendingSubmitButton>
+                  </form>
+                </div>
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">

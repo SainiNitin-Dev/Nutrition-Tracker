@@ -76,6 +76,7 @@ model User {
   goals           Goal[]
   foods           Food[]
   meals           Meal[]
+  mealTemplates   MealTemplate[]
   hydrationLogs   HydrationLog[]
   supplements     Supplement[]
   supplementLogs  SupplementLog[]
@@ -203,6 +204,41 @@ model MealItem {
   updatedAt  DateTime @updatedAt
 
   @@index([mealId])
+}
+
+model MealTemplate {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  mealType  MealType
+  notes     String?
+  items     MealTemplateItem[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([userId, mealType])
+  @@index([userId, createdAt])
+}
+
+model MealTemplateItem {
+  id         String       @id @default(cuid())
+  templateId String
+  template   MealTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  name       String
+  quantity   Decimal      @db.Decimal(8, 2)
+  unit       String
+  calories   Decimal      @db.Decimal(8, 2)
+  protein    Decimal      @db.Decimal(8, 2)
+  carbs      Decimal      @db.Decimal(8, 2)
+  fat        Decimal      @db.Decimal(8, 2)
+  fiber      Decimal?     @db.Decimal(8, 2)
+  sugar      Decimal?     @db.Decimal(8, 2)
+  sodium     Decimal?     @db.Decimal(8, 2)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([templateId])
 }
 
 model HydrationLog {

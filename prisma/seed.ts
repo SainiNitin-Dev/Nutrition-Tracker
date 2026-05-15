@@ -53,6 +53,7 @@ async function main() {
 
   await prisma.aiActionLog.deleteMany({ where: { userId: user.id } });
   await prisma.goal.deleteMany({ where: { userId: user.id } });
+  await prisma.mealTemplate.deleteMany({ where: { userId: user.id } });
   await prisma.meal.deleteMany({ where: { userId: user.id } });
   await prisma.hydrationLog.deleteMany({ where: { userId: user.id } });
   await prisma.supplement.deleteMany({ where: { userId: user.id } });
@@ -153,6 +154,28 @@ async function main() {
   ];
 
   await prisma.mealItem.createMany({ data: mealItems });
+
+  await prisma.mealTemplate.create({
+    data: {
+      userId: user.id,
+      mealType: MealType.breakfast,
+      title: "Greek yogurt bowl",
+      items: {
+        create: {
+          name: "Greek yogurt, berries, chia, honey",
+          quantity: 1,
+          unit: "bowl",
+          calories: 420,
+          protein: 34,
+          carbs: 52,
+          fat: 10,
+          fiber: 8,
+          sugar: 26,
+          sodium: 120,
+        },
+      },
+    },
+  });
 
   await prisma.hydrationLog.createMany({
     data: [

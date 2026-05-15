@@ -5,8 +5,19 @@ import { redirect } from "next/navigation";
 import { LogSource } from "@/generated/prisma/client";
 import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma/client";
-import { deleteMealSchema, manualMealSchema } from "./schemas";
-import { createMealForDemoUser, toMealType } from "./service";
+import {
+  deleteMealSchema,
+  manualMealSchema,
+  mealTemplateActionSchema,
+  saveMealTemplateSchema,
+} from "./schemas";
+import {
+  createMealForDemoUser,
+  deleteMealTemplateForCurrentUser,
+  logMealTemplateForCurrentUser,
+  saveMealAsTemplateForCurrentUser,
+  toMealType,
+} from "./service";
 
 export async function addManualMealAction(formData: FormData) {
   const parsed = manualMealSchema.safeParse(Object.fromEntries(formData));
@@ -55,4 +66,44 @@ export async function deleteMealAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/meals");
   redirect("/meals?deleted=1");
+}
+
+export async function saveMealTemplateAction(formData: FormData) {
+  const parsed = saveMealTemplateSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    redirect("/meals?error=invalid-template");
+  }
+
+  await saveMealAsTemplateForCurrentUser(parsed.data.mealId);
+
+  revalidatePath("/meals");
+  redirect("/meals?saved=1");
+}
+
+export async function logMealTemplateAction(formData: FormData) {
+  const parsed = mealTemplateActionSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    redirect("/meals?error=invalid-template");
+  }
+
+  await logMealTemplateForCurrentUser(parsed.data.templateId);
+
+  revalidatePath("/");
+  revalidatePath("/meals");
+  redirect("/meals?logged=1");
+}
+
+export async function deleteMealTemplateAction(formData: FormData) {
+  const parsed = mealTemplateActionSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    redirect("/meals?error=invalid-template");
+  }
+
+  await deleteMealTemplateForCurrentUser(parsed.data.templateId);
+
+  revalidatePath("/meals");
+  redirect("/meals?templateDeleted=1");
 }

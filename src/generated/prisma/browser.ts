@@ -53,6 +53,16 @@ export type Meal = Prisma.MealModel
  */
 export type MealItem = Prisma.MealItemModel
 /**
+ * Model MealTemplate
+ * 
+ */
+export type MealTemplate = Prisma.MealTemplateModel
+/**
+ * Model MealTemplateItem
+ * 
+ */
+export type MealTemplateItem = Prisma.MealTemplateItemModel
+/**
  * Model HydrationLog
  * 
  */

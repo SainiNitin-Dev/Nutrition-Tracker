@@ -22,6 +22,10 @@ export async function getMealTrackerData() {
         include: { items: true },
         orderBy: { date: "desc" },
       },
+      mealTemplates: {
+        include: { items: true },
+        orderBy: { updatedAt: "desc" },
+      },
     },
   });
 
@@ -56,6 +60,33 @@ export async function getMealTrackerData() {
     };
   });
 
+  const templates = user.mealTemplates.map((template) => {
+    const totals = addNutrientTotals(
+      template.items.map((item) => ({
+        calories: Number(item.calories),
+        protein: Number(item.protein),
+        carbs: Number(item.carbs),
+        fat: Number(item.fat),
+        fiber: Number(item.fiber ?? 0),
+        sugar: Number(item.sugar ?? 0),
+        sodium: Number(item.sodium ?? 0),
+      })),
+    );
+
+    return {
+      id: template.id,
+      title: template.title,
+      mealType: template.mealType,
+      items: template.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        quantity: Number(item.quantity),
+        unit: item.unit,
+      })),
+      totals,
+    };
+  });
+
   const totals = addNutrientTotals(meals.map((meal) => meal.totals));
   const goal = user.goals[0];
 
@@ -64,6 +95,7 @@ export async function getMealTrackerData() {
     calorieGoal: goal?.targetCalories ?? 2300,
     proteinGoal: Number(goal?.proteinGrams ?? 165),
     meals,
+    templates,
     totals,
   };
 }

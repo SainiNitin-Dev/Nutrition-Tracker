@@ -58,6 +58,8 @@ export const ModelName = {
   FoodNutrient: 'FoodNutrient',
   Meal: 'Meal',
   MealItem: 'MealItem',
+  MealTemplate: 'MealTemplate',
+  MealTemplateItem: 'MealTemplateItem',
   HydrationLog: 'HydrationLog',
   Supplement: 'Supplement',
   SupplementSchedule: 'SupplementSchedule',
@@ -211,6 +213,39 @@ export const MealItemScalarFieldEnum = {
 } as const
 
 export type MealItemScalarFieldEnum = (typeof MealItemScalarFieldEnum)[keyof typeof MealItemScalarFieldEnum]
+
+
+export const MealTemplateScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  mealType: 'mealType',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MealTemplateScalarFieldEnum = (typeof MealTemplateScalarFieldEnum)[keyof typeof MealTemplateScalarFieldEnum]
+
+
+export const MealTemplateItemScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  name: 'name',
+  quantity: 'quantity',
+  unit: 'unit',
+  calories: 'calories',
+  protein: 'protein',
+  carbs: 'carbs',
+  fat: 'fat',
+  fiber: 'fiber',
+  sugar: 'sugar',
+  sodium: 'sodium',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MealTemplateItemScalarFieldEnum = (typeof MealTemplateItemScalarFieldEnum)[keyof typeof MealTemplateItemScalarFieldEnum]
 
 
 export const HydrationLogScalarFieldEnum = {

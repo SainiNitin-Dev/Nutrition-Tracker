@@ -194,6 +194,7 @@ export type UserWhereInput = {
   goals?: Prisma.GoalListRelationFilter
   foods?: Prisma.FoodListRelationFilter
   meals?: Prisma.MealListRelationFilter
+  mealTemplates?: Prisma.MealTemplateListRelationFilter
   hydrationLogs?: Prisma.HydrationLogListRelationFilter
   supplements?: Prisma.SupplementListRelationFilter
   supplementLogs?: Prisma.SupplementLogListRelationFilter
@@ -215,6 +216,7 @@ export type UserOrderByWithRelationInput = {
   goals?: Prisma.GoalOrderByRelationAggregateInput
   foods?: Prisma.FoodOrderByRelationAggregateInput
   meals?: Prisma.MealOrderByRelationAggregateInput
+  mealTemplates?: Prisma.MealTemplateOrderByRelationAggregateInput
   hydrationLogs?: Prisma.HydrationLogOrderByRelationAggregateInput
   supplements?: Prisma.SupplementOrderByRelationAggregateInput
   supplementLogs?: Prisma.SupplementLogOrderByRelationAggregateInput
@@ -239,6 +241,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   goals?: Prisma.GoalListRelationFilter
   foods?: Prisma.FoodListRelationFilter
   meals?: Prisma.MealListRelationFilter
+  mealTemplates?: Prisma.MealTemplateListRelationFilter
   hydrationLogs?: Prisma.HydrationLogListRelationFilter
   supplements?: Prisma.SupplementListRelationFilter
   supplementLogs?: Prisma.SupplementLogListRelationFilter
@@ -284,6 +287,7 @@ export type UserCreateInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -305,6 +309,7 @@ export type UserUncheckedCreateInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -326,6 +331,7 @@ export type UserUpdateInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -347,6 +353,7 @@ export type UserUncheckedUpdateInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -491,6 +498,20 @@ export type UserUpdateOneRequiredWithoutMealsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMealsInput, Prisma.UserUpdateWithoutMealsInput>, Prisma.UserUncheckedUpdateWithoutMealsInput>
 }
 
+export type UserCreateNestedOneWithoutMealTemplatesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMealTemplatesInput, Prisma.UserUncheckedCreateWithoutMealTemplatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMealTemplatesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMealTemplatesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMealTemplatesInput, Prisma.UserUncheckedCreateWithoutMealTemplatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMealTemplatesInput
+  upsert?: Prisma.UserUpsertWithoutMealTemplatesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMealTemplatesInput, Prisma.UserUpdateWithoutMealTemplatesInput>, Prisma.UserUncheckedUpdateWithoutMealTemplatesInput>
+}
+
 export type UserCreateNestedOneWithoutHydrationLogsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutHydrationLogsInput, Prisma.UserUncheckedCreateWithoutHydrationLogsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutHydrationLogsInput
@@ -613,6 +634,7 @@ export type UserCreateWithoutProfileInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -633,6 +655,7 @@ export type UserUncheckedCreateWithoutProfileInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -669,6 +692,7 @@ export type UserUpdateWithoutProfileInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -689,6 +713,7 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -709,6 +734,7 @@ export type UserCreateWithoutGoalsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -729,6 +755,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -765,6 +792,7 @@ export type UserUpdateWithoutGoalsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -785,6 +813,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -805,6 +834,7 @@ export type UserCreateWithoutFoodsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -825,6 +855,7 @@ export type UserUncheckedCreateWithoutFoodsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -861,6 +892,7 @@ export type UserUpdateWithoutFoodsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -881,6 +913,7 @@ export type UserUncheckedUpdateWithoutFoodsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -901,6 +934,7 @@ export type UserCreateWithoutMealsInput = {
   profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -921,6 +955,7 @@ export type UserUncheckedCreateWithoutMealsInput = {
   profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -957,6 +992,7 @@ export type UserUpdateWithoutMealsInput = {
   profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -977,6 +1013,107 @@ export type UserUncheckedUpdateWithoutMealsInput = {
   profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutMealTemplatesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMealTemplatesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMealTemplatesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMealTemplatesInput, Prisma.UserUncheckedCreateWithoutMealTemplatesInput>
+}
+
+export type UserUpsertWithoutMealTemplatesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMealTemplatesInput, Prisma.UserUncheckedUpdateWithoutMealTemplatesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMealTemplatesInput, Prisma.UserUncheckedCreateWithoutMealTemplatesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMealTemplatesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMealTemplatesInput, Prisma.UserUncheckedUpdateWithoutMealTemplatesInput>
+}
+
+export type UserUpdateWithoutMealTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMealTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -998,6 +1135,7 @@ export type UserCreateWithoutHydrationLogsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
@@ -1018,6 +1156,7 @@ export type UserUncheckedCreateWithoutHydrationLogsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
@@ -1054,6 +1193,7 @@ export type UserUpdateWithoutHydrationLogsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
@@ -1074,6 +1214,7 @@ export type UserUncheckedUpdateWithoutHydrationLogsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
@@ -1094,6 +1235,7 @@ export type UserCreateWithoutSupplementsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
@@ -1114,6 +1256,7 @@ export type UserUncheckedCreateWithoutSupplementsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
@@ -1150,6 +1293,7 @@ export type UserUpdateWithoutSupplementsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
@@ -1170,6 +1314,7 @@ export type UserUncheckedUpdateWithoutSupplementsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
@@ -1190,6 +1335,7 @@ export type UserCreateWithoutSupplementLogsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
@@ -1210,6 +1356,7 @@ export type UserUncheckedCreateWithoutSupplementLogsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
@@ -1246,6 +1393,7 @@ export type UserUpdateWithoutSupplementLogsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
@@ -1266,6 +1414,7 @@ export type UserUncheckedUpdateWithoutSupplementLogsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
@@ -1286,6 +1435,7 @@ export type UserCreateWithoutWorkoutsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -1306,6 +1456,7 @@ export type UserUncheckedCreateWithoutWorkoutsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -1342,6 +1493,7 @@ export type UserUpdateWithoutWorkoutsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -1362,6 +1514,7 @@ export type UserUncheckedUpdateWithoutWorkoutsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1382,6 +1535,7 @@ export type UserCreateWithoutBodyMetricsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -1402,6 +1556,7 @@ export type UserUncheckedCreateWithoutBodyMetricsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -1438,6 +1593,7 @@ export type UserUpdateWithoutBodyMetricsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -1458,6 +1614,7 @@ export type UserUncheckedUpdateWithoutBodyMetricsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1478,6 +1635,7 @@ export type UserCreateWithoutConversationsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -1498,6 +1656,7 @@ export type UserUncheckedCreateWithoutConversationsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -1534,6 +1693,7 @@ export type UserUpdateWithoutConversationsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -1554,6 +1714,7 @@ export type UserUncheckedUpdateWithoutConversationsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1574,6 +1735,7 @@ export type UserCreateWithoutMemoriesInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -1594,6 +1756,7 @@ export type UserUncheckedCreateWithoutMemoriesInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -1630,6 +1793,7 @@ export type UserUpdateWithoutMemoriesInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -1650,6 +1814,7 @@ export type UserUncheckedUpdateWithoutMemoriesInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1670,6 +1835,7 @@ export type UserCreateWithoutAiActionLogsInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodCreateNestedManyWithoutUserInput
   meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
@@ -1690,6 +1856,7 @@ export type UserUncheckedCreateWithoutAiActionLogsInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
   meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
   hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
   supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
   supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
@@ -1726,6 +1893,7 @@ export type UserUpdateWithoutAiActionLogsInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
@@ -1746,6 +1914,7 @@ export type UserUncheckedUpdateWithoutAiActionLogsInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
   meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
   hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
   supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
   supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
@@ -1764,6 +1933,7 @@ export type UserCountOutputType = {
   goals: number
   foods: number
   meals: number
+  mealTemplates: number
   hydrationLogs: number
   supplements: number
   supplementLogs: number
@@ -1778,6 +1948,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   goals?: boolean | UserCountOutputTypeCountGoalsArgs
   foods?: boolean | UserCountOutputTypeCountFoodsArgs
   meals?: boolean | UserCountOutputTypeCountMealsArgs
+  mealTemplates?: boolean | UserCountOutputTypeCountMealTemplatesArgs
   hydrationLogs?: boolean | UserCountOutputTypeCountHydrationLogsArgs
   supplements?: boolean | UserCountOutputTypeCountSupplementsArgs
   supplementLogs?: boolean | UserCountOutputTypeCountSupplementLogsArgs
@@ -1817,6 +1988,13 @@ export type UserCountOutputTypeCountFoodsArgs<ExtArgs extends runtime.Types.Exte
  */
 export type UserCountOutputTypeCountMealsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MealWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMealTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MealTemplateWhereInput
 }
 
 /**
@@ -1887,6 +2065,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   goals?: boolean | Prisma.User$goalsArgs<ExtArgs>
   foods?: boolean | Prisma.User$foodsArgs<ExtArgs>
   meals?: boolean | Prisma.User$mealsArgs<ExtArgs>
+  mealTemplates?: boolean | Prisma.User$mealTemplatesArgs<ExtArgs>
   hydrationLogs?: boolean | Prisma.User$hydrationLogsArgs<ExtArgs>
   supplements?: boolean | Prisma.User$supplementsArgs<ExtArgs>
   supplementLogs?: boolean | Prisma.User$supplementLogsArgs<ExtArgs>
@@ -1931,6 +2110,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   goals?: boolean | Prisma.User$goalsArgs<ExtArgs>
   foods?: boolean | Prisma.User$foodsArgs<ExtArgs>
   meals?: boolean | Prisma.User$mealsArgs<ExtArgs>
+  mealTemplates?: boolean | Prisma.User$mealTemplatesArgs<ExtArgs>
   hydrationLogs?: boolean | Prisma.User$hydrationLogsArgs<ExtArgs>
   supplements?: boolean | Prisma.User$supplementsArgs<ExtArgs>
   supplementLogs?: boolean | Prisma.User$supplementLogsArgs<ExtArgs>
@@ -1951,6 +2131,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     goals: Prisma.$GoalPayload<ExtArgs>[]
     foods: Prisma.$FoodPayload<ExtArgs>[]
     meals: Prisma.$MealPayload<ExtArgs>[]
+    mealTemplates: Prisma.$MealTemplatePayload<ExtArgs>[]
     hydrationLogs: Prisma.$HydrationLogPayload<ExtArgs>[]
     supplements: Prisma.$SupplementPayload<ExtArgs>[]
     supplementLogs: Prisma.$SupplementLogPayload<ExtArgs>[]
@@ -2365,6 +2546,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   goals<T extends Prisma.User$goalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$goalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GoalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   foods<T extends Prisma.User$foodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$foodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FoodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meals<T extends Prisma.User$mealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  mealTemplates<T extends Prisma.User$mealTemplatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mealTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MealTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   hydrationLogs<T extends Prisma.User$hydrationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$hydrationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HydrationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   supplements<T extends Prisma.User$supplementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$supplementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupplementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   supplementLogs<T extends Prisma.User$supplementLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$supplementLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SupplementLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2889,6 +3071,30 @@ export type User$mealsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
   take?: number
   skip?: number
   distinct?: Prisma.MealScalarFieldEnum | Prisma.MealScalarFieldEnum[]
+}
+
+/**
+ * User.mealTemplates
+ */
+export type User$mealTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MealTemplate
+   */
+  select?: Prisma.MealTemplateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MealTemplate
+   */
+  omit?: Prisma.MealTemplateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MealTemplateInclude<ExtArgs> | null
+  where?: Prisma.MealTemplateWhereInput
+  orderBy?: Prisma.MealTemplateOrderByWithRelationInput | Prisma.MealTemplateOrderByWithRelationInput[]
+  cursor?: Prisma.MealTemplateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MealTemplateScalarFieldEnum | Prisma.MealTemplateScalarFieldEnum[]
 }
 
 /**
