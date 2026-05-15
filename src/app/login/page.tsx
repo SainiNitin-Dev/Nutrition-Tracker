@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, LockKeyhole, Mail, Sparkles } from "lucide-react";
-import { signInWithMagicLinkAction } from "./actions";
+import { ArrowRight, CheckCircle2, KeyRound, LockKeyhole, Mail, Sparkles } from "lucide-react";
+import { signInWithPasswordAction, signUpWithPasswordAction } from "./actions";
 
 type LoginPageProps = {
   searchParams: Promise<{
-    sent?: string;
     signedOut?: string;
     error?: string;
   }>;
@@ -26,8 +25,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Your health data, finally in conversation.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-              Sign in with a magic link to track meals, hydration, supplements,
-              and coach actions against your own account.
+              Sign in with email and password to track meals, hydration,
+              supplements, and coach actions against your own account.
             </p>
           </div>
 
@@ -50,14 +49,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
           <h2 className="mt-6 text-3xl font-semibold tracking-tight">Sign in</h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            We will email you a secure one-time link. No password to remember.
+            Use email and password. No email redirect setup needed.
           </p>
 
-          {params.sent && (
-            <div className="mt-5 rounded-3xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
-              Magic link sent. Check your email and open the link on this device.
-            </div>
-          )}
           {params.signedOut && (
             <div className="mt-5 rounded-3xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
               You have been signed out.
@@ -65,11 +59,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           )}
           {params.error && (
             <div className="mt-5 rounded-3xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
-              Sign-in could not be completed. Check your email and Supabase URL settings.
+              {errorMessage(params.error)}
             </div>
           )}
 
-          <form action={signInWithMagicLinkAction} className="mt-6 grid gap-4">
+          <form className="mt-6 grid gap-4">
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Email address
               <span className="relative">
@@ -88,10 +82,40 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </span>
             </label>
 
-            <button className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800">
-              Send magic link
-              <ArrowRight size={17} aria-hidden />
-            </button>
+            <label className="grid gap-2 text-sm font-medium text-slate-700">
+              Password
+              <span className="relative">
+                <KeyRound
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                  aria-hidden
+                />
+                <input
+                  className="h-13 w-full rounded-2xl border border-slate-200 bg-slate-50 px-11 text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  minLength={6}
+                  name="password"
+                  placeholder="At least 6 characters"
+                  required
+                  type="password"
+                />
+              </span>
+            </label>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                className="inline-flex h-12 items-center justify-between rounded-full bg-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-slate-800"
+                formAction={signInWithPasswordAction}
+              >
+                Sign in
+                <ArrowRight size={17} aria-hidden />
+              </button>
+              <button
+                className="inline-flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                formAction={signUpWithPasswordAction}
+              >
+                Create account
+              </button>
+            </div>
           </form>
 
           <Link
@@ -104,4 +128,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       </div>
     </main>
   );
+}
+
+function errorMessage(error: string) {
+  const messages: Record<string, string> = {
+    "invalid-email": "Enter a valid email address.",
+    "invalid-password": "Password must be at least 6 characters.",
+    "invalid-login": "Email or password is incorrect.",
+    signup: "Could not create account. Check if the email already exists or if password signups are enabled in Supabase.",
+  };
+
+  return messages[error] ?? "Sign-in could not be completed. Please try again.";
 }
