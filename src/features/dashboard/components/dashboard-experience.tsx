@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Check,
   ChevronDown,
@@ -253,10 +254,14 @@ function MealTimeline({ meals }: { meals: DashboardSnapshot["meals"] }) {
           <p className="text-sm font-medium text-slate-500">Meal history</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight">Today’s plate</h2>
         </div>
-        <button className="inline-flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-100">
+        <Link
+          className="inline-flex size-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition hover:bg-blue-100"
+          href="/meals"
+          title="Add meal"
+        >
           <Plus size={18} aria-hidden />
           <span className="sr-only">Add meal</span>
-        </button>
+        </Link>
       </div>
 
       <div className="mt-6 grid gap-4">
@@ -441,13 +446,24 @@ function QuickActions({ actions }: { actions: DashboardSnapshot["quickActions"] 
           const Icon = action.icon;
 
           return (
-            <button
-              className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
-              key={action.label}
-            >
-              <Icon className="text-slate-700" size={20} aria-hidden />
-              <span className="text-sm font-semibold text-slate-950">{action.label}</span>
-            </button>
+            action.label === "Add meal" ? (
+              <Link
+                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                href="/meals"
+                key={action.label}
+              >
+                <Icon className="text-slate-700" size={20} aria-hidden />
+                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
+              </Link>
+            ) : (
+              <button
+                className="flex min-h-24 flex-col items-start justify-between rounded-3xl border border-slate-100 bg-slate-50/80 p-4 text-left transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                key={action.label}
+              >
+                <Icon className="text-slate-700" size={20} aria-hidden />
+                <span className="text-sm font-semibold text-slate-950">{action.label}</span>
+              </button>
+            )
           );
         })}
       </div>
