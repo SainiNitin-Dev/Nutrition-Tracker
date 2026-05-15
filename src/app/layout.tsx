@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,9 +13,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://personalnutritiontracker.vercel.app"),
   title: "Nourish AI",
   description:
     "An AI-powered nutrition, hydration, supplement, and fitness coach.",
+  applicationName: "Nourish AI",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Nourish AI",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/brand/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/brand/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+    shortcut: ["/favicon.ico"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f8fbff",
 };
 
 export default function RootLayout({
