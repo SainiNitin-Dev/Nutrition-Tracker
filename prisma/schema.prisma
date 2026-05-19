@@ -85,6 +85,8 @@ model User {
   conversations   CoachConversation[]
   memories        CoachMemory[]
   aiActionLogs    AiActionLog[]
+  pushSubscriptions PushSubscription[]
+  notificationDeliveries NotificationDelivery[]
 
   @@index([email])
 }
@@ -297,6 +299,33 @@ model SupplementLog {
 
   @@index([userId, takenAt])
   @@index([supplementId, takenAt])
+}
+
+model PushSubscription {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint       String   @unique
+  p256dh         String
+  auth           String
+  expirationTime DateTime?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model NotificationDelivery {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveryKey String
+  dateKey     String
+  sentAt      DateTime @default(now())
+
+  @@unique([userId, deliveryKey, dateKey])
+  @@index([sentAt])
 }
 
 model Workout {

@@ -107,6 +107,16 @@ export type SupplementSchedule = Prisma.SupplementScheduleModel
  */
 export type SupplementLog = Prisma.SupplementLogModel
 /**
+ * Model PushSubscription
+ * 
+ */
+export type PushSubscription = Prisma.PushSubscriptionModel
+/**
+ * Model NotificationDelivery
+ * 
+ */
+export type NotificationDelivery = Prisma.NotificationDeliveryModel
+/**
  * Model Workout
  * 
  */

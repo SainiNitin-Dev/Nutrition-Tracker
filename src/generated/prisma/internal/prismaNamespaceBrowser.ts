@@ -64,6 +64,8 @@ export const ModelName = {
   Supplement: 'Supplement',
   SupplementSchedule: 'SupplementSchedule',
   SupplementLog: 'SupplementLog',
+  PushSubscription: 'PushSubscription',
+  NotificationDelivery: 'NotificationDelivery',
   Workout: 'Workout',
   BodyMetric: 'BodyMetric',
   CoachConversation: 'CoachConversation',
@@ -302,6 +304,32 @@ export const SupplementLogScalarFieldEnum = {
 } as const
 
 export type SupplementLogScalarFieldEnum = (typeof SupplementLogScalarFieldEnum)[keyof typeof SupplementLogScalarFieldEnum]
+
+
+export const PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  expirationTime: 'expirationTime',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+
+
+export const NotificationDeliveryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  deliveryKey: 'deliveryKey',
+  dateKey: 'dateKey',
+  sentAt: 'sentAt'
+} as const
+
+export type NotificationDeliveryScalarFieldEnum = (typeof NotificationDeliveryScalarFieldEnum)[keyof typeof NotificationDeliveryScalarFieldEnum]
 
 
 export const WorkoutScalarFieldEnum = {

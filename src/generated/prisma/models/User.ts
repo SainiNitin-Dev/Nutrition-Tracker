@@ -203,6 +203,8 @@ export type UserWhereInput = {
   conversations?: Prisma.CoachConversationListRelationFilter
   memories?: Prisma.CoachMemoryListRelationFilter
   aiActionLogs?: Prisma.AiActionLogListRelationFilter
+  pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
+  notificationDeliveries?: Prisma.NotificationDeliveryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -225,6 +227,8 @@ export type UserOrderByWithRelationInput = {
   conversations?: Prisma.CoachConversationOrderByRelationAggregateInput
   memories?: Prisma.CoachMemoryOrderByRelationAggregateInput
   aiActionLogs?: Prisma.AiActionLogOrderByRelationAggregateInput
+  pushSubscriptions?: Prisma.PushSubscriptionOrderByRelationAggregateInput
+  notificationDeliveries?: Prisma.NotificationDeliveryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -250,6 +254,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   conversations?: Prisma.CoachConversationListRelationFilter
   memories?: Prisma.CoachMemoryListRelationFilter
   aiActionLogs?: Prisma.AiActionLogListRelationFilter
+  pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
+  notificationDeliveries?: Prisma.NotificationDeliveryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -296,6 +302,8 @@ export type UserCreateInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -318,6 +326,8 @@ export type UserUncheckedCreateInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -340,6 +350,8 @@ export type UserUpdateInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -362,6 +374,8 @@ export type UserUncheckedUpdateInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -554,6 +568,34 @@ export type UserUpdateOneRequiredWithoutSupplementLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSupplementLogsInput, Prisma.UserUpdateWithoutSupplementLogsInput>, Prisma.UserUncheckedUpdateWithoutSupplementLogsInput>
 }
 
+export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  upsert?: Prisma.UserUpsertWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, Prisma.UserUpdateWithoutPushSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
+export type UserCreateNestedOneWithoutNotificationDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedCreateWithoutNotificationDeliveriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationDeliveriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNotificationDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedCreateWithoutNotificationDeliveriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationDeliveriesInput
+  upsert?: Prisma.UserUpsertWithoutNotificationDeliveriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationDeliveriesInput, Prisma.UserUpdateWithoutNotificationDeliveriesInput>, Prisma.UserUncheckedUpdateWithoutNotificationDeliveriesInput>
+}
+
 export type UserCreateNestedOneWithoutWorkoutsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWorkoutsInput, Prisma.UserUncheckedCreateWithoutWorkoutsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkoutsInput
@@ -643,6 +685,8 @@ export type UserCreateWithoutProfileInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutProfileInput = {
@@ -664,6 +708,8 @@ export type UserUncheckedCreateWithoutProfileInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutProfileInput = {
@@ -701,6 +747,8 @@ export type UserUpdateWithoutProfileInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutProfileInput = {
@@ -722,6 +770,8 @@ export type UserUncheckedUpdateWithoutProfileInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGoalsInput = {
@@ -743,6 +793,8 @@ export type UserCreateWithoutGoalsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -764,6 +816,8 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -801,6 +855,8 @@ export type UserUpdateWithoutGoalsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -822,6 +878,8 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutFoodsInput = {
@@ -843,6 +901,8 @@ export type UserCreateWithoutFoodsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutFoodsInput = {
@@ -864,6 +924,8 @@ export type UserUncheckedCreateWithoutFoodsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutFoodsInput = {
@@ -901,6 +963,8 @@ export type UserUpdateWithoutFoodsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFoodsInput = {
@@ -922,6 +986,8 @@ export type UserUncheckedUpdateWithoutFoodsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMealsInput = {
@@ -943,6 +1009,8 @@ export type UserCreateWithoutMealsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMealsInput = {
@@ -964,6 +1032,8 @@ export type UserUncheckedCreateWithoutMealsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMealsInput = {
@@ -1001,6 +1071,8 @@ export type UserUpdateWithoutMealsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMealsInput = {
@@ -1022,6 +1094,8 @@ export type UserUncheckedUpdateWithoutMealsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMealTemplatesInput = {
@@ -1043,6 +1117,8 @@ export type UserCreateWithoutMealTemplatesInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMealTemplatesInput = {
@@ -1064,6 +1140,8 @@ export type UserUncheckedCreateWithoutMealTemplatesInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMealTemplatesInput = {
@@ -1101,6 +1179,8 @@ export type UserUpdateWithoutMealTemplatesInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMealTemplatesInput = {
@@ -1122,6 +1202,8 @@ export type UserUncheckedUpdateWithoutMealTemplatesInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutHydrationLogsInput = {
@@ -1143,6 +1225,8 @@ export type UserCreateWithoutHydrationLogsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutHydrationLogsInput = {
@@ -1164,6 +1248,8 @@ export type UserUncheckedCreateWithoutHydrationLogsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutHydrationLogsInput = {
@@ -1201,6 +1287,8 @@ export type UserUpdateWithoutHydrationLogsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutHydrationLogsInput = {
@@ -1222,6 +1310,8 @@ export type UserUncheckedUpdateWithoutHydrationLogsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSupplementsInput = {
@@ -1243,6 +1333,8 @@ export type UserCreateWithoutSupplementsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSupplementsInput = {
@@ -1264,6 +1356,8 @@ export type UserUncheckedCreateWithoutSupplementsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSupplementsInput = {
@@ -1301,6 +1395,8 @@ export type UserUpdateWithoutSupplementsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSupplementsInput = {
@@ -1322,6 +1418,8 @@ export type UserUncheckedUpdateWithoutSupplementsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSupplementLogsInput = {
@@ -1343,6 +1441,8 @@ export type UserCreateWithoutSupplementLogsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSupplementLogsInput = {
@@ -1364,6 +1464,8 @@ export type UserUncheckedCreateWithoutSupplementLogsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSupplementLogsInput = {
@@ -1401,6 +1503,8 @@ export type UserUpdateWithoutSupplementLogsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSupplementLogsInput = {
@@ -1422,6 +1526,224 @@ export type UserUncheckedUpdateWithoutSupplementLogsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPushSubscriptionsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpsertWithoutPushSubscriptionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPushSubscriptionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpdateWithoutPushSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutNotificationDeliveriesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutNotificationDeliveriesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutUserInput
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  foods?: Prisma.FoodUncheckedCreateNestedManyWithoutUserInput
+  meals?: Prisma.MealUncheckedCreateNestedManyWithoutUserInput
+  mealTemplates?: Prisma.MealTemplateUncheckedCreateNestedManyWithoutUserInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedCreateNestedManyWithoutUserInput
+  supplements?: Prisma.SupplementUncheckedCreateNestedManyWithoutUserInput
+  supplementLogs?: Prisma.SupplementLogUncheckedCreateNestedManyWithoutUserInput
+  workouts?: Prisma.WorkoutUncheckedCreateNestedManyWithoutUserInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
+  conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
+  memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutNotificationDeliveriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedCreateWithoutNotificationDeliveriesInput>
+}
+
+export type UserUpsertWithoutNotificationDeliveriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedUpdateWithoutNotificationDeliveriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedCreateWithoutNotificationDeliveriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNotificationDeliveriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNotificationDeliveriesInput, Prisma.UserUncheckedUpdateWithoutNotificationDeliveriesInput>
+}
+
+export type UserUpdateWithoutNotificationDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNotificationDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile?: Prisma.ProfileUncheckedUpdateOneWithoutUserNestedInput
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  foods?: Prisma.FoodUncheckedUpdateManyWithoutUserNestedInput
+  meals?: Prisma.MealUncheckedUpdateManyWithoutUserNestedInput
+  mealTemplates?: Prisma.MealTemplateUncheckedUpdateManyWithoutUserNestedInput
+  hydrationLogs?: Prisma.HydrationLogUncheckedUpdateManyWithoutUserNestedInput
+  supplements?: Prisma.SupplementUncheckedUpdateManyWithoutUserNestedInput
+  supplementLogs?: Prisma.SupplementLogUncheckedUpdateManyWithoutUserNestedInput
+  workouts?: Prisma.WorkoutUncheckedUpdateManyWithoutUserNestedInput
+  bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
+  conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
+  memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
+  aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkoutsInput = {
@@ -1443,6 +1765,8 @@ export type UserCreateWithoutWorkoutsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkoutsInput = {
@@ -1464,6 +1788,8 @@ export type UserUncheckedCreateWithoutWorkoutsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkoutsInput = {
@@ -1501,6 +1827,8 @@ export type UserUpdateWithoutWorkoutsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkoutsInput = {
@@ -1522,6 +1850,8 @@ export type UserUncheckedUpdateWithoutWorkoutsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBodyMetricsInput = {
@@ -1543,6 +1873,8 @@ export type UserCreateWithoutBodyMetricsInput = {
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBodyMetricsInput = {
@@ -1564,6 +1896,8 @@ export type UserUncheckedCreateWithoutBodyMetricsInput = {
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBodyMetricsInput = {
@@ -1601,6 +1935,8 @@ export type UserUpdateWithoutBodyMetricsInput = {
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBodyMetricsInput = {
@@ -1622,6 +1958,8 @@ export type UserUncheckedUpdateWithoutBodyMetricsInput = {
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutConversationsInput = {
@@ -1643,6 +1981,8 @@ export type UserCreateWithoutConversationsInput = {
   bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversationsInput = {
@@ -1664,6 +2004,8 @@ export type UserUncheckedCreateWithoutConversationsInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversationsInput = {
@@ -1701,6 +2043,8 @@ export type UserUpdateWithoutConversationsInput = {
   bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversationsInput = {
@@ -1722,6 +2066,8 @@ export type UserUncheckedUpdateWithoutConversationsInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMemoriesInput = {
@@ -1743,6 +2089,8 @@ export type UserCreateWithoutMemoriesInput = {
   bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMemoriesInput = {
@@ -1764,6 +2112,8 @@ export type UserUncheckedCreateWithoutMemoriesInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   aiActionLogs?: Prisma.AiActionLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMemoriesInput = {
@@ -1801,6 +2151,8 @@ export type UserUpdateWithoutMemoriesInput = {
   bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemoriesInput = {
@@ -1822,6 +2174,8 @@ export type UserUncheckedUpdateWithoutMemoriesInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   aiActionLogs?: Prisma.AiActionLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAiActionLogsInput = {
@@ -1843,6 +2197,8 @@ export type UserCreateWithoutAiActionLogsInput = {
   bodyMetrics?: Prisma.BodyMetricCreateNestedManyWithoutUserInput
   conversations?: Prisma.CoachConversationCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAiActionLogsInput = {
@@ -1864,6 +2220,8 @@ export type UserUncheckedCreateWithoutAiActionLogsInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedCreateNestedManyWithoutUserInput
   conversations?: Prisma.CoachConversationUncheckedCreateNestedManyWithoutUserInput
   memories?: Prisma.CoachMemoryUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAiActionLogsInput = {
@@ -1901,6 +2259,8 @@ export type UserUpdateWithoutAiActionLogsInput = {
   bodyMetrics?: Prisma.BodyMetricUpdateManyWithoutUserNestedInput
   conversations?: Prisma.CoachConversationUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiActionLogsInput = {
@@ -1922,6 +2282,8 @@ export type UserUncheckedUpdateWithoutAiActionLogsInput = {
   bodyMetrics?: Prisma.BodyMetricUncheckedUpdateManyWithoutUserNestedInput
   conversations?: Prisma.CoachConversationUncheckedUpdateManyWithoutUserNestedInput
   memories?: Prisma.CoachMemoryUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  notificationDeliveries?: Prisma.NotificationDeliveryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1942,6 +2304,8 @@ export type UserCountOutputType = {
   conversations: number
   memories: number
   aiActionLogs: number
+  pushSubscriptions: number
+  notificationDeliveries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1957,6 +2321,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   conversations?: boolean | UserCountOutputTypeCountConversationsArgs
   memories?: boolean | UserCountOutputTypeCountMemoriesArgs
   aiActionLogs?: boolean | UserCountOutputTypeCountAiActionLogsArgs
+  pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
+  notificationDeliveries?: boolean | UserCountOutputTypeCountNotificationDeliveriesArgs
 }
 
 /**
@@ -2053,6 +2419,20 @@ export type UserCountOutputTypeCountAiActionLogsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.AiActionLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PushSubscriptionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationDeliveryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2074,6 +2454,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
   memories?: boolean | Prisma.User$memoriesArgs<ExtArgs>
   aiActionLogs?: boolean | Prisma.User$aiActionLogsArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  notificationDeliveries?: boolean | Prisma.User$notificationDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2119,6 +2501,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   conversations?: boolean | Prisma.User$conversationsArgs<ExtArgs>
   memories?: boolean | Prisma.User$memoriesArgs<ExtArgs>
   aiActionLogs?: boolean | Prisma.User$aiActionLogsArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  notificationDeliveries?: boolean | Prisma.User$notificationDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2140,6 +2524,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     conversations: Prisma.$CoachConversationPayload<ExtArgs>[]
     memories: Prisma.$CoachMemoryPayload<ExtArgs>[]
     aiActionLogs: Prisma.$AiActionLogPayload<ExtArgs>[]
+    pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
+    notificationDeliveries: Prisma.$NotificationDeliveryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2555,6 +2941,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   conversations<T extends Prisma.User$conversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoachConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   memories<T extends Prisma.User$memoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$memoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoachMemoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiActionLogs<T extends Prisma.User$aiActionLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiActionLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiActionLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pushSubscriptions<T extends Prisma.User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notificationDeliveries<T extends Prisma.User$notificationDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3287,6 +3675,54 @@ export type User$aiActionLogsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.AiActionLogScalarFieldEnum | Prisma.AiActionLogScalarFieldEnum[]
+}
+
+/**
+ * User.pushSubscriptions
+ */
+export type User$pushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PushSubscription
+   */
+  select?: Prisma.PushSubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PushSubscription
+   */
+  omit?: Prisma.PushSubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PushSubscriptionInclude<ExtArgs> | null
+  where?: Prisma.PushSubscriptionWhereInput
+  orderBy?: Prisma.PushSubscriptionOrderByWithRelationInput | Prisma.PushSubscriptionOrderByWithRelationInput[]
+  cursor?: Prisma.PushSubscriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PushSubscriptionScalarFieldEnum | Prisma.PushSubscriptionScalarFieldEnum[]
+}
+
+/**
+ * User.notificationDeliveries
+ */
+export type User$notificationDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NotificationDelivery
+   */
+  select?: Prisma.NotificationDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NotificationDelivery
+   */
+  omit?: Prisma.NotificationDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationDeliveryInclude<ExtArgs> | null
+  where?: Prisma.NotificationDeliveryWhereInput
+  orderBy?: Prisma.NotificationDeliveryOrderByWithRelationInput | Prisma.NotificationDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationDeliveryScalarFieldEnum | Prisma.NotificationDeliveryScalarFieldEnum[]
 }
 
 /**

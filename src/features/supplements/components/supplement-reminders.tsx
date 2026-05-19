@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bell, BellRing } from "lucide-react";
 
 type ReminderSupplement = {
@@ -15,17 +15,12 @@ type SupplementReminderPanelProps = {
   supplements: ReminderSupplement[];
 };
 
+type ReminderState = "checking" | "unsupported" | "ready" | "enabled" | "blocked" | "error";
+
 export function SupplementReminderPanel({
   supplements,
 }: SupplementReminderPanelProps) {
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">(() => {
-    if (typeof window === "undefined") {
-      return "default";
-    }
-
-    return "Notification" in window ? Notification.permission : "unsupported";
-  });
-  const timeoutIds = useRef<number[]>([]);
+  const [state, setState] = useState<ReminderState>("checking");
   const pendingReminders = useMemo(
     () =>
       supplements.filter(
@@ -36,50 +31,72 @@ export function SupplementReminderPanel({
       ),
     [supplements],
   );
-
+  const nextReminder = pendingReminders[0];
 
   useEffect(() => {
-    timeoutIds.current.forEach((id) => window.clearTimeout(id));
-    timeoutIds.current = [];
-
-    if (permission !== "granted") {
-      return;
-    }
-
-    pendingReminders.forEach((supplement) => {
-      const delay = millisecondsUntilTodayTime(supplement.time);
-
-      if (delay === null) {
+    async function checkSupport() {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        setState("unsupported");
         return;
       }
 
-      const timeoutId = window.setTimeout(() => {
-        new Notification("Supplement reminder", {
-          body: `${supplement.name} is scheduled for ${supplement.time}.`,
-          tag: `supplement-${supplement.id}-${supplement.time}`,
-        });
-      }, delay);
+      if (Notification.permission === "denied") {
+        setState("blocked");
+        return;
+      }
 
-      timeoutIds.current.push(timeoutId);
-    });
-
-    return () => {
-      timeoutIds.current.forEach((id) => window.clearTimeout(id));
-      timeoutIds.current = [];
-    };
-  }, [pendingReminders, permission]);
-
-  async function requestPermission() {
-    if (!("Notification" in window)) {
-      setPermission("unsupported");
-      return;
+      const registration = await navigator.serviceWorker.register("/push-sw.js");
+      const existingSubscription = await registration.pushManager.getSubscription();
+      setState(existingSubscription ? "enabled" : "ready");
     }
 
-    const nextPermission = await Notification.requestPermission();
-    setPermission(nextPermission);
-  }
+    void checkSupport();
+  }, []);
 
-  const nextReminder = pendingReminders[0];
+  async function enableReminders() {
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        setState("unsupported");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+
+      if (permission === "denied") {
+        setState("blocked");
+        return;
+      }
+
+      if (permission !== "granted") {
+        setState("ready");
+        return;
+      }
+
+      const keyResponse = await fetch("/api/push/public-key");
+
+      if (!keyResponse.ok) {
+        setState("error");
+        return;
+      }
+
+      const { publicKey } = await keyResponse.json() as { publicKey: string };
+      const registration = await navigator.serviceWorker.register("/push-sw.js");
+      const existingSubscription = await registration.pushManager.getSubscription();
+      const subscription = existingSubscription ?? await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      const saveResponse = await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subscription),
+      });
+
+      setState(saveResponse.ok ? "enabled" : "error");
+    } catch {
+      setState("error");
+    }
+  }
 
   return (
     <section className="min-w-0 overflow-hidden rounded-[32px] border border-white/80 bg-white p-5 shadow-[0_24px_70px_rgba(30,41,59,0.08)]">
@@ -87,18 +104,14 @@ export function SupplementReminderPanel({
         <div>
           <p className="text-sm font-medium text-blue-600">Reminders</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight">
-            {permission === "granted" ? "Notifications on" : "Local nudges"}
+            {state === "enabled" ? "Push reminders on" : "Smart reminders"}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            {permission === "unsupported"
-              ? "This browser does not support local notifications."
-              : nextReminder
-                ? `Next: ${nextReminder.name} at ${nextReminder.time}. Works while the app is open or active.`
-                : "No pending supplement reminders for today."}
+            {reminderDescription(state, nextReminder)}
           </p>
         </div>
         <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600">
-          {permission === "granted" ? (
+          {state === "enabled" ? (
             <BellRing size={20} aria-hidden />
           ) : (
             <Bell size={20} aria-hidden />
@@ -106,30 +119,56 @@ export function SupplementReminderPanel({
         </div>
       </div>
 
-      {permission !== "granted" && permission !== "unsupported" && (
+      {state !== "enabled" && state !== "unsupported" && state !== "blocked" && (
         <button
-          className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-800"
-          onClick={requestPermission}
+          className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-wait disabled:opacity-70"
+          disabled={state === "checking"}
+          onClick={enableReminders}
           type="button"
         >
-          Enable reminders
+          Enable push reminders
         </button>
       )}
     </section>
   );
 }
 
-function millisecondsUntilTodayTime(time: string) {
-  const [hour, minute] = time.split(":").map(Number);
-
-  if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
-    return null;
+function reminderDescription(
+  state: ReminderState,
+  nextReminder?: ReminderSupplement,
+) {
+  if (state === "unsupported") {
+    return "This browser does not support Web Push reminders.";
   }
 
-  const now = new Date();
-  const scheduled = new Date();
-  scheduled.setHours(hour, minute, 0, 0);
-  const delay = scheduled.getTime() - now.getTime();
+  if (state === "blocked") {
+    return "Notifications are blocked in your browser settings.";
+  }
 
-  return delay > 0 ? delay : null;
+  if (state === "error") {
+    return "Push reminders need VAPID keys configured before they can be enabled.";
+  }
+
+  if (state === "checking") {
+    return "Checking notification support...";
+  }
+
+  if (nextReminder) {
+    return `Next supplement: ${nextReminder.name} at ${nextReminder.time}. Hydration and meal nudges are included.`;
+  }
+
+  return "Hydration and meal nudges are included. Add supplements to get dose-time reminders.";
+}
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let index = 0; index < rawData.length; index += 1) {
+    outputArray[index] = rawData.charCodeAt(index);
+  }
+
+  return outputArray;
 }
