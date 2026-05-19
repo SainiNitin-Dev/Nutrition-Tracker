@@ -31,6 +31,7 @@ const coachMessageSchema = z.object({
 
 const coachRequestSchema = z.object({
   messages: z.array(coachMessageSchema).min(1).max(20),
+  mode: z.enum(["chat", "log"]).default("chat"),
 });
 
 export async function POST(request: Request) {
@@ -49,8 +50,7 @@ export async function POST(request: Request) {
     .reverse()
     .find((message) => message.role === "user");
   const latestUserText = latestUserMessage?.content ?? "";
-  const messageIntent = classifyCoachMessageIntent(latestUserText);
-  const shouldApplyDeterministicAction = messageIntent !== "conversation";
+  const shouldApplyDeterministicAction = parsed.data.mode === "log";
   const waterAmount = shouldApplyDeterministicAction
     ? extractWaterAmountMl(latestUserText)
     : null;
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
 
   const result = streamText({
     model: getGroqChatModel(),
-    system: buildCoachSystemPrompt(context),
+    system: buildCoachSystemPrompt(context, parsed.data.mode),
     messages: parsed.data.messages,
     stopWhen: stepCountIs(3),
     tools: {
@@ -340,61 +340,6 @@ export async function POST(request: Request) {
   });
 
   return result.toTextStreamResponse();
-}
-
-type CoachMessageIntent = "conversation" | "log" | "edit" | "delete" | "supplement";
-
-function classifyCoachMessageIntent(text: string): CoachMessageIntent {
-  const normalized = text.trim().toLowerCase();
-
-  if (!normalized) {
-    return "conversation";
-  }
-
-  if (/\b(delete|remove|undo)\b/.test(normalized)) {
-    return "delete";
-  }
-
-  if (/\b(change|set|update|adjust)\b/.test(normalized)) {
-    return "edit";
-  }
-
-  if (
-    /\b(supplement|vitamin|creatine|magnesium|d3)\b/.test(normalized) &&
-    /\b(mark|take|taken|took|skip|skipped|missed|logged|had)\b/.test(normalized)
-  ) {
-    return "supplement";
-  }
-
-  if (/\b(add|log|record|track)\b/.test(normalized)) {
-    return "log";
-  }
-
-  if (hasDirectQuestionIntent(normalized)) {
-    return "conversation";
-  }
-
-  if (/\b(?:i\s+)?drank\b/.test(normalized) && extractWaterAmountMl(text)) {
-    return "log";
-  }
-
-  if (
-    /\b(?:i\s+)?(had|ate|eaten|consumed)\b/.test(normalized) &&
-    hasFoodSignal(normalized)
-  ) {
-    return "log";
-  }
-
-  return "conversation";
-}
-
-function hasDirectQuestionIntent(normalized: string) {
-  return (
-    normalized.includes("?") ||
-    /\b(what|why|how|should|can|could|would|is|are|am|do|does|did|explain|suggest|recommend|advice|workout|exercise|training|routine|plan)\b/.test(
-      normalized,
-    )
-  );
 }
 
 async function logSupplementFromCoach(

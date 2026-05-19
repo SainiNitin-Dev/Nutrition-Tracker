@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, ListPlus, Loader2, MessageCircle, Send } from "lucide-react";
 
 type CoachChatPanelProps = {
   insights: string[];
@@ -15,20 +15,30 @@ type ChatMessage = {
   content: string;
 };
 
-const starterPrompts = [
+type CoachMode = "chat" | "log";
+
+const chatStarterPrompts = [
   "How am I doing today?",
-  "Log my Greek yogurt bowl",
+  "Suggest a workout for tonight",
+  "What should I improve tomorrow?",
+];
+
+const logStarterPrompts = [
+  "Log mango shake as dinner",
   "I drank 500ml water",
+  "Mark magnesium taken",
 ];
 
 export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
+  const [coachMode, setCoachMode] = useState<CoachMode>("chat");
   const [isStreaming, setIsStreaming] = useState(false);
   const hasConversation = messages.length > 0;
 
   const visibleInsights = useMemo(() => insights.slice(0, 3), [insights]);
+  const visibleStarterPrompts = coachMode === "log" ? logStarterPrompts : chatStarterPrompts;
 
   async function sendMessage(content: string) {
     const trimmed = content.trim();
@@ -59,6 +69,7 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: nextMessages.map(({ role, content }) => ({ role, content })),
+          mode: coachMode,
         }),
       });
 
@@ -95,7 +106,9 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
               ? {
                   ...message,
                   content:
-                    "I heard you, but I could not turn that into a reliable update. Try naming the food and meal, like: log oats shake as breakfast.",
+                    coachMode === "log"
+                      ? "I heard you, but I could not turn that into a reliable update. Try naming the food and meal, like: log oats shake as breakfast."
+                      : "I am here. Ask me again in a little more detail and I will help you think it through.",
                 }
               : message,
           ),
@@ -165,7 +178,7 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
                 {message.content || (
                   <span className="inline-flex items-center gap-2 text-slate-400">
                     <Loader2 className="animate-spin" size={14} aria-hidden />
-                    Thinking through your logs
+                    {coachMode === "log" ? "Updating your log" : "Thinking with you"}
                   </span>
                 )}
               </article>
@@ -180,8 +193,37 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
             ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {starterPrompts.map((prompt) => (
+      <div className="mt-4 grid grid-cols-2 rounded-full border border-white/10 bg-white/[0.06] p-1 text-xs font-semibold">
+        <button
+          className={`inline-flex h-9 items-center justify-center gap-2 rounded-full transition ${
+            coachMode === "chat"
+              ? "bg-white text-slate-950"
+              : "text-slate-300 hover:bg-white/10"
+          }`}
+          disabled={isStreaming}
+          onClick={() => setCoachMode("chat")}
+          type="button"
+        >
+          <MessageCircle size={14} aria-hidden />
+          Chat
+        </button>
+        <button
+          className={`inline-flex h-9 items-center justify-center gap-2 rounded-full transition ${
+            coachMode === "log"
+              ? "bg-white text-slate-950"
+              : "text-slate-300 hover:bg-white/10"
+          }`}
+          disabled={isStreaming}
+          onClick={() => setCoachMode("log")}
+          type="button"
+        >
+          <ListPlus size={14} aria-hidden />
+          Log
+        </button>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {visibleStarterPrompts.map((prompt) => (
           <button
             className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10 disabled:opacity-50"
             disabled={isStreaming}
@@ -193,7 +235,6 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
           </button>
         ))}
       </div>
-
       <form
         className={`mt-4 flex items-center gap-2 ${
           variant === "conversation"
@@ -210,13 +251,13 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
           disabled={isStreaming}
           id="coach-message"
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask or log something..."
+          placeholder={coachMode === "log" ? "Log food, water, or supplements..." : "Ask your coach anything..."}
           value={input}
         />
         <button
           className="grid size-12 shrink-0 place-items-center rounded-full bg-white text-slate-950 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isStreaming || !input.trim()}
-          title="Send message"
+          title={coachMode === "log" ? "Send log update" : "Send chat message"}
           type="submit"
         >
           {isStreaming ? (
@@ -231,7 +272,9 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
       {!hasConversation && (
         <div className="mt-4 flex items-center gap-2 text-xs font-medium text-slate-400">
           <ArrowRight size={14} aria-hidden />
-          {'Try: "Log my Greek yogurt bowl" or "I drank 500ml water".'}
+          {coachMode === "log"
+            ? 'Try: "Log mango shake as dinner" or "I drank 500ml water".'
+            : 'Try: "How am I doing today?" or "Suggest a workout for tonight".'}
         </div>
       )}
     </section>
