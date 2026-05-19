@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ListPlus, Loader2, MessageCircle, Send } from "lucide-react";
+import { ListPlus, Loader2, MessageCircle, Send } from "lucide-react";
 
 type CoachChatPanelProps = {
   insights: string[];
@@ -193,7 +193,23 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
             ))}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 rounded-full border border-white/10 bg-white/[0.06] p-1 text-xs font-semibold">
+      {!hasConversation && (
+        <div className="mt-4 flex max-h-24 flex-wrap gap-2 overflow-hidden">
+          {visibleStarterPrompts.map((prompt) => (
+            <button
+              className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10 disabled:opacity-50"
+              disabled={isStreaming}
+              key={prompt}
+              onClick={() => void sendMessage(prompt)}
+              type="button"
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className={`${hasConversation ? "mt-4" : "mt-3"} grid grid-cols-2 rounded-full border border-white/10 bg-white/[0.06] p-1 text-xs font-semibold`}>
         <button
           className={`inline-flex h-9 items-center justify-center gap-2 rounded-full transition ${
             coachMode === "chat"
@@ -220,20 +236,6 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
           <ListPlus size={14} aria-hidden />
           Log
         </button>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {visibleStarterPrompts.map((prompt) => (
-          <button
-            className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-white/10 disabled:opacity-50"
-            disabled={isStreaming}
-            key={prompt}
-            onClick={() => void sendMessage(prompt)}
-            type="button"
-          >
-            {prompt}
-          </button>
-        ))}
       </div>
       <form
         className={`mt-4 flex items-center gap-2 ${
@@ -268,15 +270,6 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
           <span className="sr-only">Send message</span>
         </button>
       </form>
-
-      {!hasConversation && (
-        <div className="mt-4 flex items-center gap-2 text-xs font-medium text-slate-400">
-          <ArrowRight size={14} aria-hidden />
-          {coachMode === "log"
-            ? 'Try: "Log mango shake as dinner" or "I drank 500ml water".'
-            : 'Try: "How am I doing today?" or "Suggest a workout for tonight".'}
-        </div>
-      )}
     </section>
   );
 }
