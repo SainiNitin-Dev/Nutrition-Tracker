@@ -48,31 +48,33 @@ export async function POST(request: Request) {
   const latestUserMessage = [...parsed.data.messages]
     .reverse()
     .find((message) => message.role === "user");
-  const waterAmount = latestUserMessage
-    ? extractWaterAmountMl(latestUserMessage.content)
+  const latestUserText = latestUserMessage?.content ?? "";
+  const messageIntent = classifyCoachMessageIntent(latestUserText);
+  const shouldApplyDeterministicAction = messageIntent !== "conversation";
+  const waterAmount = shouldApplyDeterministicAction
+    ? extractWaterAmountMl(latestUserText)
     : null;
-  const deleteHydrationRequest = latestUserMessage
-    ? extractDeleteHydrationRequest(latestUserMessage.content)
+  const deleteHydrationRequest = shouldApplyDeterministicAction
+    ? extractDeleteHydrationRequest(latestUserText)
     : null;
-  const deleteMealRequest = latestUserMessage
-    ? extractDeleteMealRequest(latestUserMessage.content)
+  const deleteMealRequest = shouldApplyDeterministicAction
+    ? extractDeleteMealRequest(latestUserText)
     : null;
-  const mealNutrientUpdate = latestUserMessage
-    ? extractMealNutrientUpdate(latestUserMessage.content)
+  const mealNutrientUpdate = shouldApplyDeterministicAction
+    ? extractMealNutrientUpdate(latestUserText)
     : null;
-  const savedMealRequest = latestUserMessage
-    ? extractSavedMealLookup(latestUserMessage.content, context.savedMeals)
+  const savedMealRequest = shouldApplyDeterministicAction
+    ? extractSavedMealLookup(latestUserText, context.savedMeals)
     : null;
-  const mealRequest = latestUserMessage
-    ? extractSimpleMealRequest(latestUserMessage.content)
+  const mealRequest = shouldApplyDeterministicAction
+    ? extractSimpleMealRequest(latestUserText)
     : null;
-  const foodReportRequest = latestUserMessage
-    ? extractFoodReportRequest(latestUserMessage.content)
+  const foodReportRequest = shouldApplyDeterministicAction
+    ? extractFoodReportRequest(latestUserText)
     : null;
-  const supplementRequest = latestUserMessage
-    ? extractSupplementRequest(latestUserMessage.content)
+  const supplementRequest = shouldApplyDeterministicAction
+    ? extractSupplementRequest(latestUserText)
     : null;
-
   if (deleteHydrationRequest) {
     const result = await deleteLatestHydrationFromCoach();
 
@@ -340,6 +342,61 @@ export async function POST(request: Request) {
   return result.toTextStreamResponse();
 }
 
+type CoachMessageIntent = "conversation" | "log" | "edit" | "delete" | "supplement";
+
+function classifyCoachMessageIntent(text: string): CoachMessageIntent {
+  const normalized = text.trim().toLowerCase();
+
+  if (!normalized) {
+    return "conversation";
+  }
+
+  if (/\b(delete|remove|undo)\b/.test(normalized)) {
+    return "delete";
+  }
+
+  if (/\b(change|set|update|adjust)\b/.test(normalized)) {
+    return "edit";
+  }
+
+  if (
+    /\b(supplement|vitamin|creatine|magnesium|d3)\b/.test(normalized) &&
+    /\b(mark|take|taken|took|skip|skipped|missed|logged|had)\b/.test(normalized)
+  ) {
+    return "supplement";
+  }
+
+  if (/\b(add|log|record|track)\b/.test(normalized)) {
+    return "log";
+  }
+
+  if (hasDirectQuestionIntent(normalized)) {
+    return "conversation";
+  }
+
+  if (/\b(?:i\s+)?drank\b/.test(normalized) && extractWaterAmountMl(text)) {
+    return "log";
+  }
+
+  if (
+    /\b(?:i\s+)?(had|ate|eaten|consumed)\b/.test(normalized) &&
+    hasFoodSignal(normalized)
+  ) {
+    return "log";
+  }
+
+  return "conversation";
+}
+
+function hasDirectQuestionIntent(normalized: string) {
+  return (
+    normalized.includes("?") ||
+    /\b(what|why|how|should|can|could|would|is|are|am|do|does|did|explain|suggest|recommend|advice|workout|exercise|training|routine|plan)\b/.test(
+      normalized,
+    )
+  );
+}
+
 async function logSupplementFromCoach(
   supplementName: string,
   status: SupplementLogStatus,
@@ -576,7 +633,7 @@ function hasWaterIntent(normalized: string) {
     normalized,
   );
   const drinkIntentWithoutFood = /\b(drank|drink|drinking)\b/.test(normalized) &&
-    !hasFoodSignal(normalized);
+    !hasNamedFoodSignal(normalized);
 
   return directWaterIntent || drinkIntentWithoutFood;
 }
@@ -779,12 +836,16 @@ function extractFoodReportRequest(text: string): SimpleMealRequest | null {
 
 function hasFoodSignal(normalized: string) {
   return (
-    /\b(oats?|milk|shake|peanut|butter|sugar|rice|chicken|egg|eggs|whey|banana|roti|bread|paneer|tofu|yogurt|yoghurt|dal|beans|salad|pasta|potato)\b/.test(
-      normalized,
-    ) ||
+    hasNamedFoodSignal(normalized) ||
     /\b\d+(?:\.\d+)?\s*(g|gram|grams|kg|ml|cup|cups|scoop|scoops)\b/.test(
       normalized,
     )
+  );
+}
+
+function hasNamedFoodSignal(normalized: string) {
+  return /\b(oats?|milk|shake|peanut|butter|sugar|rice|chicken|egg|eggs|whey|banana|roti|bread|paneer|tofu|yogurt|yoghurt|dal|beans|salad|pasta|potato|mango|apple|fruit|juice|smoothie)\b/.test(
+    normalized,
   );
 }
 
@@ -861,7 +922,7 @@ function cleanLoggedMealText(value: string) {
       ),
       "",
     )
-    .replace(/[â€¢,;:]+/g, " ")
+    .replace(/[\u2022,;:]+/g, " ")
     .replace(/\b(and|with)\b\s*$/gi, "")
     .replace(/\s+/g, " ")
     .trim();
