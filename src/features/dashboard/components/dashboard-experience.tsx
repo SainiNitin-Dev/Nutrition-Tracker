@@ -61,6 +61,9 @@ export function DashboardExperience({ snapshot }: DashboardExperienceProps) {
               <WeeklyPanel values={snapshot.weeklyCalories} />
               <SupplementPanel supplements={snapshot.supplements} />
             </div>
+            <div className="lg:hidden">
+              <SignalsPanel signals={snapshot.signals} />
+            </div>
             <MobileTodayActions />
           </section>
 

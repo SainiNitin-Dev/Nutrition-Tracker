@@ -93,11 +93,11 @@ export default async function MealsPage({ searchParams }: MealsPageProps) {
         )}
 
         <section className="grid gap-5 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <div className="order-2 grid gap-5 lg:order-1">
+          <div className="grid gap-5">
             <MealForm />
             <SavedMealTemplates templates={data.templates} />
           </div>
-          <div className="order-1 lg:order-2">
+          <div>
             <MealList meals={data.meals} />
           </div>
         </section>

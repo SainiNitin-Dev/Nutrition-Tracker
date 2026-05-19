@@ -552,6 +552,10 @@ async function addHydrationLog(amountMl: number) {
 
 function extractWaterAmountMl(text: string) {
   const normalized = text.toLowerCase();
+
+  if (!hasWaterIntent(normalized)) {
+    return null;
+  }
   const milliliterMatch = normalized.match(/(\d{2,4})\s*(ml|milliliters?)/);
 
   if (milliliterMatch) {
@@ -565,6 +569,16 @@ function extractWaterAmountMl(text: string) {
   }
 
   return null;
+}
+
+function hasWaterIntent(normalized: string) {
+  const directWaterIntent = /\b(water|hydration|hydrate|hydrated)\b/.test(
+    normalized,
+  );
+  const drinkIntentWithoutFood = /\b(drank|drink|drinking)\b/.test(normalized) &&
+    !hasFoodSignal(normalized);
+
+  return directWaterIntent || drinkIntentWithoutFood;
 }
 
 function extractDeleteHydrationRequest(text: string) {
@@ -722,28 +736,23 @@ function extractSimpleMealRequest(text: string): SimpleMealRequest | null {
     return null;
   }
 
-  const mealTypeMatch = normalized.match(
-    /\b(breakfast|lunch|dinner|snack)\b/,
-  );
-
-  if (!mealTypeMatch) {
+  if (hasWaterIntent(normalized) && !hasFoodSignal(normalized)) {
     return null;
   }
 
-  const withoutCommand = text
-    .replace(/\b(add|log|ate|had)\b/gi, "")
-    .replace(/\b(for|as|to my|my)\b/gi, "")
-    .replace(/\b(breakfast|lunch|dinner|snack)\b/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  const mealType = extractMealType(normalized) ?? inferMealTypeFromCurrentTime();
+  const nutrition = extractExplicitNutrition(normalized);
+  const withoutCommand = cleanLoggedMealText(text);
 
   if (withoutCommand.length < 3) {
     return null;
   }
 
   return {
-    mealType: mealTypeMatch[1] as SimpleMealRequest["mealType"],
+    mealType,
     text: withoutCommand,
+    title: titleFromFoodText(withoutCommand),
+    nutrition: nutrition ?? undefined,
   };
 }
 
@@ -772,8 +781,92 @@ function hasFoodSignal(normalized: string) {
   return (
     /\b(oats?|milk|shake|peanut|butter|sugar|rice|chicken|egg|eggs|whey|banana|roti|bread|paneer|tofu|yogurt|yoghurt|dal|beans|salad|pasta|potato)\b/.test(
       normalized,
-    ) || /\b\d+(?:\.\d+)?\s*(g|gram|grams|kg|ml|cup|cups|scoop|scoops)\b/.test(normalized)
+    ) ||
+    /\b\d+(?:\.\d+)?\s*(g|gram|grams|kg|ml|cup|cups|scoop|scoops)\b/.test(
+      normalized,
+    )
   );
+}
+
+function extractExplicitNutrition(normalized: string) {
+  const calories = extractNutrientAmount(normalized, [
+    "calorie",
+    "calories",
+    "kcal",
+  ]);
+  const protein = extractNutrientAmount(normalized, ["protein"]);
+  const carbs = extractNutrientAmount(normalized, [
+    "carb",
+    "carbs",
+    "carbohydrate",
+    "carbohydrates",
+  ]);
+  const fat = extractNutrientAmount(normalized, ["fat", "fats"]);
+  const fiber = extractNutrientAmount(normalized, ["fiber", "fibre"]);
+
+  if (calories === null && protein === null && carbs === null && fat === null) {
+    return null;
+  }
+
+  return {
+    calories: Math.round(calories ?? 0),
+    protein: roundOneDecimal(protein ?? 0),
+    carbs: roundOneDecimal(carbs ?? 0),
+    fat: roundOneDecimal(fat ?? 0),
+    fiber: roundOneDecimal(fiber ?? 0),
+    sodium: 0,
+  };
+}
+
+function extractNutrientAmount(normalized: string, labels: string[]) {
+  const labelPattern = labels.join("|");
+  const labelFirst = normalized.match(
+    new RegExp(`\\b(?:${labelPattern})\\b\\s*[:=~-]?\\s*~?\\s*(\\d+(?:\\.\\d+)?)\\s*(?:g|kcal|calories?)?`),
+  );
+
+  if (labelFirst) {
+    return Number(labelFirst[1]);
+  }
+
+  const valueFirst = normalized.match(
+    new RegExp(`\\b(\\d+(?:\\.\\d+)?)\\s*(?:g|kcal|calories?)?\\s*(?:${labelPattern})\\b`),
+  );
+
+  return valueFirst ? Number(valueFirst[1]) : null;
+}
+
+function roundOneDecimal(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+function cleanLoggedMealText(value: string) {
+  const nutrientLabels =
+    "calories?|kcal|protein|carbs?|carbohydrates?|fat|fats|fiber|fibre|sodium|salt";
+
+  const cleaned = value
+    .replace(/\b(add|log|ate|had)\b/gi, "")
+    .replace(/\b(for|as|to my|my)\b/gi, "")
+    .replace(/\b(breakfast|lunch|dinner|snack)\b/gi, "")
+    .replace(
+      new RegExp(
+        `\\b(?:${nutrientLabels})\\b\\s*[:=~-]?\\s*~?\\s*\\d+(?:\\.\\d+)?\\s*(?:g|mg|kcal|calories?)?`,
+        "gi",
+      ),
+      "",
+    )
+    .replace(
+      new RegExp(
+        `\\b\\d+(?:\\.\\d+)?\\s*(?:g|mg|kcal|calories?)?\\s*(?:${nutrientLabels})\\b`,
+        "gi",
+      ),
+      "",
+    )
+    .replace(/[â€¢,;:]+/g, " ")
+    .replace(/\b(and|with)\b\s*$/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned || value.trim();
 }
 
 function cleanFoodReportText(value: string) {
