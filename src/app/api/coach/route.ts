@@ -1,4 +1,4 @@
-import { streamText, stepCountIs, tool } from "ai";
+import { generateText, streamText, stepCountIs, tool } from "ai";
 import { z } from "zod";
 import { getGroqChatModel } from "@/lib/ai/provider";
 import { prisma } from "@/lib/prisma/client";
@@ -50,6 +50,7 @@ export async function POST(request: Request) {
     .reverse()
     .find((message) => message.role === "user");
   const latestUserText = latestUserMessage?.content ?? "";
+  const messagesForModel = stripClientFallbackMessages(parsed.data.messages);
   const shouldApplyDeterministicAction =
     parsed.data.mode === "log" || hasExplicitCoachActionIntent(latestUserText);
   const waterAmount = shouldApplyDeterministicAction
@@ -213,10 +214,25 @@ export async function POST(request: Request) {
     );
   }
 
+  if (parsed.data.mode === "chat") {
+    const result = await generateText({
+      model: getGroqChatModel(),
+      system: buildCoachSystemPrompt(context, "chat"),
+      messages: messagesForModel,
+    });
+    const text = result.text.trim() ||
+      "I am listening. Say that another way and I will answer directly.";
+
+    return new Response(text, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    });
+  }
   const result = streamText({
     model: getGroqChatModel(),
     system: buildCoachSystemPrompt(context, parsed.data.mode),
-    messages: parsed.data.messages,
+    messages: messagesForModel,
     stopWhen: stepCountIs(3),
     tools: parsed.data.mode === "log" ? {
       addHydrationLog: tool({
@@ -343,6 +359,15 @@ export async function POST(request: Request) {
   return result.toTextStreamResponse();
 }
 
+function stripClientFallbackMessages(messages: Array<{ role: "user" | "assistant"; content: string }>) {
+  return messages.filter(
+    (message) =>
+      !(
+        message.role === "assistant" &&
+        message.content.includes("Ask me again in a little more detail")
+      ),
+  );
+}
 function hasExplicitCoachActionIntent(text: string) {
   const normalized = text.trim().toLowerCase();
 
