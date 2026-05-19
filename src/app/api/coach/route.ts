@@ -1,4 +1,4 @@
-import { generateText, streamText, stepCountIs, tool } from "ai";
+import { streamText, stepCountIs, tool } from "ai";
 import { z } from "zod";
 import { getGroqChatModel } from "@/lib/ai/provider";
 import { prisma } from "@/lib/prisma/client";
@@ -23,6 +23,7 @@ import {
   logSupplementForDemoUser,
 } from "@/features/supplements/service";
 import { getCurrentOrDemoAppUser } from "@/lib/auth/current-user";
+import { getServerEnv } from "@/lib/env";
 
 const coachMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -215,13 +216,10 @@ export async function POST(request: Request) {
   }
 
   if (parsed.data.mode === "chat") {
-    const result = await generateText({
-      model: getGroqChatModel(),
+    const text = await generateGroqChatReply({
       system: buildCoachSystemPrompt(context, "chat"),
       messages: messagesForModel,
     });
-    const text = result.text.trim() ||
-      "I am listening. Say that another way and I will answer directly.";
 
     return new Response(text, {
       headers: {
@@ -359,6 +357,64 @@ export async function POST(request: Request) {
   return result.toTextStreamResponse();
 }
 
+type CoachChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+async function generateGroqChatReply({
+  system,
+  messages,
+}: {
+  system: string;
+  messages: CoachChatMessage[];
+}) {
+  const env = getServerEnv();
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.groqApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: env.groqChatModel,
+      messages: [
+        { role: "system", content: system },
+        ...normalizeGroqMessages(messages),
+      ],
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Groq chat failed: ${response.status} ${errorText}`);
+  }
+
+  const completion = await response.json() as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const text = completion.choices?.[0]?.message?.content?.trim();
+
+  return text || "I am listening. Say that another way and I will answer directly.";
+}
+
+function normalizeGroqMessages(messages: CoachChatMessage[]) {
+  const normalized: CoachChatMessage[] = [];
+
+  for (const message of messages) {
+    const previous = normalized.at(-1);
+
+    if (previous?.role === message.role) {
+      previous.content = `${previous.content}\n\n${message.content}`;
+      continue;
+    }
+
+    normalized.push(message);
+  }
+
+  return normalized;
+}
 function stripClientFallbackMessages(messages: Array<{ role: "user" | "assistant"; content: string }>) {
   return messages.filter(
     (message) =>

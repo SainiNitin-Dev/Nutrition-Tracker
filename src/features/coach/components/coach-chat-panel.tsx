@@ -123,7 +123,7 @@ export function CoachChatPanel({ insights, variant = "card" }: CoachChatPanelPro
             ? {
                 ...message,
                 content:
-                  "I could not reach the coach service just now. Check the Groq key and try again.",
+                  "The coach hit a temporary server error. Try once more in a moment.",
               }
             : message,
         ),
