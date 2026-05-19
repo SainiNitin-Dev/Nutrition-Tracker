@@ -46,12 +46,27 @@ export async function getSupplementTrackerData() {
     };
   });
 
+  const scheduledSupplements = supplements.sort(
+    (first, second) =>
+      supplementTimeSortValue(first.time) - supplementTimeSortValue(second.time),
+  );
+
   return {
     userName: user.name ?? "Alex",
-    supplements,
-    takenCount: supplements.filter((item) => item.status === "taken").length,
-    skippedCount: supplements.filter((item) => item.status === "skipped").length,
+    supplements: scheduledSupplements,
+    takenCount: scheduledSupplements.filter((item) => item.status === "taken").length,
+    skippedCount: scheduledSupplements.filter((item) => item.status === "skipped").length,
   };
+}
+
+function supplementTimeSortValue(time: string) {
+  if (time === "Anytime") {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const [hour, minute] = time.split(":").map(Number);
+
+  return hour * 60 + minute;
 }
 
 function startOfToday() {

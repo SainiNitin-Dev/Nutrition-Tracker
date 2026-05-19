@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Check, Clock3, Pill, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { PendingSubmitButton } from "@/components/ui/pending-submit-button";
+import { SupplementReminderPanel } from "@/features/supplements/components/supplement-reminders";
 import {
   addSupplementAction,
   deleteSupplementAction,
@@ -80,6 +81,7 @@ export default async function SupplementsPage({
               skippedCount={data.skippedCount}
               total={data.supplements.length}
             />
+            <SupplementReminderPanel supplements={data.supplements} />
           </div>
           <SupplementList supplements={data.supplements} />
         </section>
@@ -342,65 +344,68 @@ function SupplementList({
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <form action={markSupplementTakenAction}>
-                  <input name="supplementId" type="hidden" value={supplement.id} />
-                  <PendingSubmitButton
-                    aria-label={`Mark ${supplement.name} taken`}
-                    className="inline-flex h-10 items-center gap-2 rounded-full border border-emerald-100 bg-white px-3 text-sm font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-50"
-                    title="Mark taken"
-                  >
-                    <Check size={16} aria-hidden />
-                    Taken
-                  </PendingSubmitButton>
-                </form>
-                <form action={markSupplementSkippedAction}>
-                  <input name="supplementId" type="hidden" value={supplement.id} />
-                  <PendingSubmitButton
-                    aria-label={`Skip ${supplement.name}`}
-                    className="inline-flex h-10 items-center gap-2 rounded-full border border-rose-100 bg-white px-3 text-sm font-semibold text-rose-600 transition hover:-translate-y-0.5 hover:bg-rose-50"
-                    title="Skip supplement"
-                  >
-                    <X size={16} aria-hidden />
-                    Skip
-                  </PendingSubmitButton>
-                </form>
-                <form action={deleteSupplementAction}>
-                  <input name="supplementId" type="hidden" value={supplement.id} />
-                  <PendingSubmitButton
-                    aria-label={`Remove ${supplement.name}`}
-                    className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100"
-                    title="Remove supplement"
-                  >
-                    <Trash2 size={16} aria-hidden />
-                    Remove
-                  </PendingSubmitButton>
-                </form>
+                {supplement.status === "planned" ? (
+                  <>
+                    <form action={markSupplementTakenAction}>
+                      <input name="supplementId" type="hidden" value={supplement.id} />
+                      <PendingSubmitButton
+                        aria-label={`Mark ${supplement.name} taken`}
+                        className="inline-flex h-10 items-center gap-2 rounded-full border border-emerald-100 bg-white px-3 text-sm font-semibold text-emerald-700 transition hover:-translate-y-0.5 hover:bg-emerald-50"
+                        title="Mark taken"
+                      >
+                        <Check size={16} aria-hidden />
+                        Taken
+                      </PendingSubmitButton>
+                    </form>
+                    <form action={markSupplementSkippedAction}>
+                      <input name="supplementId" type="hidden" value={supplement.id} />
+                      <PendingSubmitButton
+                        aria-label={`Skip ${supplement.name}`}
+                        className="inline-flex h-10 items-center gap-2 rounded-full border border-rose-100 bg-white px-3 text-sm font-semibold text-rose-600 transition hover:-translate-y-0.5 hover:bg-rose-50"
+                        title="Skip supplement"
+                      >
+                        <X size={16} aria-hidden />
+                        Skip
+                      </PendingSubmitButton>
+                    </form>
+                    <details className="relative">
+                      <summary className="inline-flex h-10 cursor-pointer list-none items-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 transition hover:-translate-y-0.5 hover:bg-slate-100 [&::-webkit-details-marker]:hidden">
+                        <Clock3 size={16} aria-hidden />
+                        Manage
+                      </summary>
+                      <div className="absolute right-0 z-10 mt-2 w-64 rounded-3xl border border-slate-100 bg-white p-3 shadow-xl">
+                        <form action={deleteSupplementAction}>
+                          <input name="supplementId" type="hidden" value={supplement.id} />
+                          <PendingSubmitButton
+                            aria-label={`Remove ${supplement.name}`}
+                            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                            title="Remove supplement"
+                          >
+                            <Trash2 size={16} aria-hidden />
+                            Remove
+                          </PendingSubmitButton>
+                        </form>
+                      </div>
+                    </details>
+                  </>
+                ) : (
+                  <div className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-3 text-sm font-semibold text-slate-600 shadow-sm">
+                    {supplement.status === "taken" ? (
+                      <Check size={16} className="text-emerald-600" aria-hidden />
+                    ) : (
+                      <X size={16} className="text-rose-500" aria-hidden />
+                    )}
+                    {supplement.status === "taken" ? "Done for today" : "Skipped today"}
+                  </div>
+                )}
               </div>
             </div>
 
-            <form
-              action={updateSupplementScheduleAction}
-              className="mt-4 flex flex-col gap-3 rounded-2xl bg-white p-3 shadow-sm sm:flex-row sm:items-end"
-            >
-              <input name="supplementId" type="hidden" value={supplement.id} />
-              <label className="grid flex-1 gap-2 text-sm font-medium text-slate-700">
-                Schedule time
-                <input
-                  className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
-                  defaultValue={supplement.time === "Anytime" ? "09:00" : supplement.time}
-                  name="timeOfDay"
-                  required
-                  type="time"
-                />
-              </label>
-              <PendingSubmitButton
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-wait disabled:opacity-70"
-                pendingLabel="Saving..."
-              >
-                <Clock3 size={16} aria-hidden />
-                Save schedule
-              </PendingSubmitButton>
-            </form>
+            {supplement.status === "planned" && (
+              <div className="mt-4">
+                <ScheduleForm supplement={supplement} />
+              </div>
+            )}
 
             {supplement.loggedAt && (
               <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
@@ -416,6 +421,37 @@ function SupplementList({
   );
 }
 
+function ScheduleForm({
+  supplement,
+}: {
+  supplement: Awaited<ReturnType<typeof getSupplementTrackerData>>["supplements"][number];
+}) {
+  return (
+    <form
+      action={updateSupplementScheduleAction}
+      className="flex flex-col gap-3 rounded-2xl bg-white p-3 shadow-sm sm:flex-row sm:items-end"
+    >
+      <input name="supplementId" type="hidden" value={supplement.id} />
+      <label className="grid flex-1 gap-2 text-sm font-medium text-slate-700">
+        Schedule time
+        <input
+          className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-slate-950 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+          defaultValue={supplement.time === "Anytime" ? "09:00" : supplement.time}
+          name="timeOfDay"
+          required
+          type="time"
+        />
+      </label>
+      <PendingSubmitButton
+        className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-blue-600 px-4 text-sm font-semibold text-white shadow-md shadow-blue-100 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-wait disabled:opacity-70"
+        pendingLabel="Saving..."
+      >
+        <Clock3 size={16} aria-hidden />
+        Save schedule
+      </PendingSubmitButton>
+    </form>
+  );
+}
 function statusClassName(status: string) {
   const base =
     "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]";
