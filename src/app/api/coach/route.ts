@@ -50,7 +50,8 @@ export async function POST(request: Request) {
     .reverse()
     .find((message) => message.role === "user");
   const latestUserText = latestUserMessage?.content ?? "";
-  const shouldApplyDeterministicAction = parsed.data.mode === "log";
+  const shouldApplyDeterministicAction =
+    parsed.data.mode === "log" || hasExplicitCoachActionIntent(latestUserText);
   const waterAmount = shouldApplyDeterministicAction
     ? extractWaterAmountMl(latestUserText)
     : null;
@@ -217,7 +218,7 @@ export async function POST(request: Request) {
     system: buildCoachSystemPrompt(context, parsed.data.mode),
     messages: parsed.data.messages,
     stopWhen: stepCountIs(3),
-    tools: {
+    tools: parsed.data.mode === "log" ? {
       addHydrationLog: tool({
         description:
           "Log water intake for the user. Use this when the user says they drank water or asks you to add water.",
@@ -336,12 +337,36 @@ export async function POST(request: Request) {
               };
         },
       }),
-    },
+    } : undefined,
   });
 
   return result.toTextStreamResponse();
 }
 
+function hasExplicitCoachActionIntent(text: string) {
+  const normalized = text.trim().toLowerCase();
+
+  if (!normalized) {
+    return false;
+  }
+
+  if (/\b(delete|remove|undo|change|set|update|adjust)\b/.test(normalized)) {
+    return true;
+  }
+
+  if (/\b(add|log|logged|record|track)\b/.test(normalized)) {
+    return true;
+  }
+
+  if (
+    /\b(mark|take|taken|took|skip|skipped|missed)\b/.test(normalized) &&
+    /\b(supplement|vitamin|creatine|magnesium|d3)\b/.test(normalized)
+  ) {
+    return true;
+  }
+
+  return /\b(?:i\s+)?drank\b/.test(normalized) && Boolean(extractWaterAmountMl(text));
+}
 async function logSupplementFromCoach(
   supplementName: string,
   status: SupplementLogStatus,
